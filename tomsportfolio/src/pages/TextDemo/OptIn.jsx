@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import {BaseLayout } from '../../components/Layout';
+import { useTheme } from '../../context/ThemeContext';
 
 const SmsOptIn = ({ workOrderId }) => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const SmsOptIn = ({ workOrderId }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConsenting, setIsConsenting] = useState(false);
   const navigate = useNavigate(); // Import useNavigate
+  const { theme, toggleTheme } = useTheme();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -70,7 +72,16 @@ const SmsOptIn = ({ workOrderId }) => {
 
   return (
     <BaseLayout>
-      <img src={`./media/TBT_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" />
+      <div className="position-relative">
+        <button 
+          onClick={toggleTheme}
+          className="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 mt-2 me-2"
+          style={{ zIndex: 1000 }}
+        >
+          {theme === 'light' ? '🌙' : '☀️'}
+        </button>
+        <img src={`./media/TBT_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" />
+      </div>
       <div id="optInBody" className="container mt-4">
         <h3 className="text-center mb-4">Text Message Demo</h3>
         <div className="card mb-4">

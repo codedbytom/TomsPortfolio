@@ -76,16 +76,18 @@
   content: "✓";
   position: absolute;
   left: 0;
-  color: #4CAF50;
+  color: var(--accent-color);
   font-weight: bold;
 }
 
 .card {
   padding: 2em;
+  background-color: var(--background-secondary);
+  border-color: var(--border-color);
 }
 
 .read-the-docs {
-  color: #888;
+  color: var(--text-secondary);
 }
 
 /* Section styling */
@@ -102,10 +104,11 @@ section {
 .hero h1 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
+  color: var(--text-primary);
 }
 
 .hero h3 {
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 500;
   margin-bottom: 1rem;
 }
@@ -126,7 +129,7 @@ section {
   margin: 2rem 0;
   padding: 1.5rem;
   border-radius: 8px;
-  background: #f8f9fa;
+  background: var(--background-secondary);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
@@ -136,12 +139,12 @@ section {
 }
 
 .project h3 {
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 0.75rem;
 }
 
 .project p {
-  color: #666;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
@@ -167,8 +170,8 @@ section {
 }
 
 .navbar {
-  padding: 2rem;  /* Sets all sides to 2rem */
-  background-color: rgba(255, 255, 255, 0.95) !important;
+  padding: 2rem;
+  background-color: var(--background-primary) !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -179,13 +182,13 @@ section {
 /* If you want different padding for mobile */
 @media screen and (max-width: 768px) {
   .navbar {
-    padding: 1rem 2rem; /* top/bottom 1rem, left/right 2rem */
+    padding: 1rem 2rem;
   }
 }
 
 .content-wrapper {
   padding-top: 2rem;
-  margin-top: 4rem; /* Space for fixed navbar */
+  margin-top: 4rem;
 }
 
 @media screen and (max-width: 768px) {

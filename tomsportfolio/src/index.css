@@ -2,11 +2,6 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -18,9 +13,9 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px white inset !important;
-    box-shadow: 0 0 0 30px white inset !important;
-    -webkit-text-fill-color: #000 !important;
+    -webkit-box-shadow: 0 0 0 30px var(--background-primary) inset !important;
+    box-shadow: 0 0 0 30px var(--background-primary) inset !important;
+    -webkit-text-fill-color: var(--text-primary) !important;
 }
 
 /* For Firefox */
@@ -28,28 +23,32 @@ input:-moz-autofill,
 input:-moz-autofill:hover,
 input:-moz-autofill:focus,
 input:-moz-autofill:active {
-    background-color: white !important;
-    color: #000 !important;
+    background-color: var(--background-primary) !important;
+    color: var(--text-primary) !important;
 }
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--accent-color);
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--accent-color);
+  opacity: 0.8;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--background-primary);
+  color: var(--text-primary);
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  color: var(--text-primary);
 }
 
 button {
@@ -59,28 +58,25 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--accent-color);
+  color: white;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  opacity: 0.9;
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
 /* Add this CSS to make the video responsive */
 .responsive-video {
   width: 100%;
   height: auto; /* Maintains aspect ratio */
 }
-.container {
-  width: 100%;
-  max-width: 600px; /* Adjust as needed */
-  margin: 0 auto;
-  text-align: center;
-}
+
 .SmsOptInLogo {
     max-height: 8rem; /* Remove fixed height */
     padding: 0; /* Remove padding or adjust as needed */
@@ -93,9 +89,134 @@ button:focus-visible {
 
 #optInBody .card {
   padding: 1rem;
+  background-color: var(--background-secondary);
+  border-color: var(--border-color);
 }
+
 #optInBody .col-form-label {
   font-weight: bold;
+  color: var(--text-primary);
+}
+
+.ios-message-bar {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+  background-color: var(--background-primary);
+  border-top: 1px solid var(--border-color);
+}
+
+.ios-message-input {
+  display: flex;
+  align-items: center;
+  background-color: var(--background-secondary);
+  border-radius: 20px;
+  padding: 8px 15px;
+  min-height: 40px;
+  flex-grow: 1;
+  color: var(--text-primary);
+}
+
+.send-button {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: white;
+  font-weight: 500;
+  background-color: var(--accent-color);
+}
+
+.send-button:disabled {
+  opacity: 0.5;
+}
+
+/* System message styling (left side) */
+.system-message {
+  background-color: var(--background-secondary) !important;
+  color: var(--text-primary) !important;
+  margin-right: auto;
+  margin-left: 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  width: auto;
+  min-width: 200px;
+  opacity: 1;
+  z-index: 1;
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.header-logo {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: var(--background-secondary);
+}
+
+.contact-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 4px;
+}
+
+/* CHECKBOX STYLING */
+.custom-checkbox-wrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.custom-checkbox-wrapper input[type="checkbox"] {
+  opacity: 0;
+  position: absolute;
+}
+
+.custom-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.checkbox-custom {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #007AFF;
+  border-radius: 6px;
+  display: inline-block;
+  position: relative;
+  background: white;
+  flex-shrink: 0;
+}
+
+/* Checkmark */
+.custom-checkbox-wrapper input[type="checkbox"]:checked + .custom-checkbox-label .checkbox-custom {
+  background: #007AFF;
+}
+
+.custom-checkbox-wrapper input[type="checkbox"]:checked + .custom-checkbox-label .checkbox-custom::after {
+  content: '✓';
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+}
+
+.checkbox-text {
+  user-select: none;
 }
 
 .alert-fade {
@@ -190,65 +311,11 @@ button:focus-visible {
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-.ios-message-input {
-  display: flex;
-  align-items: center;
-  background-color: #ffffff;
-  border-radius: 20px;
-  padding: 8px 15px;
-  margin: 10px 0;
-  min-height: 40px;
-  width: 100%;
-  max-width: 600px;
-  border: 1px solid #e5e5ea;  /* Add a subtle border */
-}
-
 .message-text {
   color: #8e8e93;  /* iOS placeholder gray */
   font-size: 16px;
 }
-.ios-message-bar {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  gap: 10px;  /* Space between input and button */
-  background-color: #ffffff;
-  border-top: 1px solid #e5e5ea;
-}
-.ios-message-input {
-  display: flex;
-  align-items: center;
-  background-color: #f1f1f1;
-  border-radius: 20px;
-  padding: 8px 15px;
-  min-height: 40px;
-  flex-grow: 1;  /* Takes up available space */
-}
 
-.send-button {
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  color: white;
-  font-weight: 500;
-}
-
-.send-button:disabled {
-  opacity: 0.5;
-}
-
-/* System message styling (left side) */
-.system-message {
-  background-color: #e9ecef !important;
-  color: #212529 !important;
-  margin-right: auto;
-  margin-left: 0;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  width: auto;
-  min-width: 200px;  /* Add minimum width */
-  opacity: 1;
-  z-index: 1;
-}
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -260,79 +327,4 @@ button:focus-visible {
   button {
     background-color: #007AFF;
   }
-}
-
-.header-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 0;
-    border-bottom: 1px solid #e5e5ea;  /* iOS-style border */
-}
-
-.header-logo {
-    height: 100px;
-    width: 100px;
-    border-radius: 50%;  /* Makes it circular */
-    object-fit: cover;   /* Ensures image fills circle nicely */
-    background-color: #f1f1f1; /* iOS-style background for images */
-}
-
-.contact-name {
-    font-size: 16px;
-    font-weight: 600;    /* iOS uses slightly bolder font */
-    color: #212529;
-    margin-top: 4px;
-}
-/* CHECKBOX STYLING */
-
-/* Hide default checkbox */
-.custom-checkbox-wrapper {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.custom-checkbox-wrapper input[type="checkbox"] {
-  opacity: 0;
-  position: absolute;
-}
-
-.custom-checkbox-label {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.checkbox-custom {
-  width: 24px;
-  height: 24px;
-  border: 2px solid #007AFF;
-  border-radius: 6px;
-  display: inline-block;
-  position: relative;
-  background: white;
-  flex-shrink: 0;
-}
-
-/* Checkmark */
-.custom-checkbox-wrapper input[type="checkbox"]:checked + .custom-checkbox-label .checkbox-custom {
-  background: #007AFF;
-}
-
-.custom-checkbox-wrapper input[type="checkbox"]:checked + .custom-checkbox-label .checkbox-custom::after {
-  content: '✓';
-  color: white;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 16px;
-}
-
-.checkbox-text {
-  user-select: none;
 }

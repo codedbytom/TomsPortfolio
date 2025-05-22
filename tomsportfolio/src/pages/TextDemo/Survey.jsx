@@ -3,18 +3,10 @@ import axios from 'axios';
 import './Survey.css';
 
 const Survey = () => {
-  const [formData, setFormData] = useState({
-    rating: '',
-    recommendation: '',
-    likes: [],
-    comments: {
-      rating: '',
-      recommendation: '',
-      likes: '',
-      suggestions: ''
-    }
-  });
+  const [formData, setFormData] = useState({});
+  const [survey, setSurvey] = useState(null);
 
+  
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
@@ -41,6 +33,90 @@ const Survey = () => {
     }));
   };
 
+  const renderQuestionInput = (q) => {
+    switch (q.questionTypeID) {
+      case 1: //1-10 rating
+      return <div className="rating-container">
+           {q.answerOptions.map((option, rating) => (
+            <label key={option.id}>
+              <input
+                type="radio"
+                className={`rating-button ${formData[q.id] === option.id ? 'selected' : ''}`}
+                name={`question-${q.id}`}
+                checked={formData[q.id] === option.id}
+                onChange={() => setFormData(prev => ({
+                  ...prev,
+                  [q.id]: option.id
+                }))}
+              />
+              {option.text}
+            </label>
+          ))}
+        </div>
+        case 2: //yes/no
+        return <div className="recommendation-buttons">
+          {q.answerOptions.map(option => (
+            <label key={option.id}>
+              <button
+                type="button"
+                className={`recommendation-button ${formData[q.id] === option.id ? 'selected' : ''}`}
+                onChange={() => {
+                  setFormData(prev => {
+                    const current = prev[q.id] || [];
+                    return {
+                      ...prev,
+                      [q.id]: current.includes(option.id)
+                        ? current.filter(id => id !== option.id)
+                        : [...current, option.id]
+                    };
+                  });
+                }}
+              />
+              {option.text}
+            </label>
+          ))}
+        </div>
+        case 3: //multi-choice
+          return (
+            <div className="rating-container">
+              {q.answerOptions.map(option => (
+                <div key={option.id}>
+                  <input
+                    type="checkbox"
+                    checked={formData[q.id]?.includes(option.id)}
+                    onChange={() => {
+                    setFormData(prev => {
+                      const current = prev[q.id] || [];
+                      return {
+                        ...prev,
+                        [q.id]: current.includes(option.id)
+                          ? current.filter(id => id !== option.id)
+                          : [...current, option.id]
+                      };
+                    });
+                    }}
+                  />
+                  {option.text}
+                </div>
+              ))}
+            </div>
+          );
+        case 4: //text
+          return (
+            <textarea
+              placeholder="Your answer..."
+              value={formData[q.id] || ''}
+              onChange={e => setFormData(prev => ({
+                ...prev,
+                [q.id]: e.target.value
+              }))}
+            />
+          );
+        default:
+          return null;
+    };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Survey submitted:', formData);
@@ -51,101 +127,32 @@ const Survey = () => {
       console.error('Error submitting survey:', error);
     }
   };
-  // useEffect(() => {
-  //     fetch(`/api/survey/1`)
-  //       .then(res => res.json())
-  //       .then(setSurvey);
-  // }, []);
+  useEffect(() => {
+      fetch(`${import.meta.env.VITE_API_URL_HTTP}/api/demosurvey/VMvTQNdzEEWIOKbrNdqrww`)
+        .then(res => res.json())
+        .then(data => {
+          setSurvey(data);
+          const initialFormData = data.questions.reduce((acc, q) => {
+            acc[q.id] = q.answerOptions.length > 1 ? [] : '';
+            return acc;
+          }, {});
+          setFormData(initialFormData);
+        });
+  }, []);
+
   return (
     <div className="survey-container">
       <div className="survey-header">
-        <h1>TomBuiltThis</h1>
+        <h1>TomBuiltIt</h1>
       </div>
       
       <form onSubmit={handleSubmit} className="survey-form">
-        <div className="question-block">
-          <h2>1. What is your thoughts on the demo so far? (1 being awful and 10 being perfect)</h2>
-          <div className="rating-container">
-            {[...Array(10)].map((_, index) => (
-              <button
-                key={index + 1}
-                type="button"
-                className={`rating-button ${formData.rating === (index + 1) ? 'selected' : ''}`}
-                onClick={() => handleInputChange('rating', index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
+        {survey && survey.questions.map((q, idx) => (
+          <div key={q.id} className="question-block">
+            <h2>{idx + 1}. {q.text}</h2>
+            {renderQuestionInput(q)}
           </div>
-          <textarea
-            placeholder="Additional comments..."
-            value={formData.comments.rating}
-            onChange={(e) => handleCommentChange('rating', e.target.value)}
-          />
-        </div>
-
-        <div className="question-block">
-          <h2>2. Would you recommend this demo to a friend or family member?</h2>
-          <div className="recommendation-buttons">
-            <button
-              type="button"
-              className={`recommendation-button ${formData.recommendation === 'Yes' ? 'selected' : ''}`}
-              onClick={() => handleInputChange('recommendation', 'Yes')}
-            >
-              Yes
-            </button>
-            <button
-              type="button"
-              className={`recommendation-button ${formData.recommendation === 'No' ? 'selected' : ''}`}
-              onClick={() => handleInputChange('recommendation', 'No')}
-            >
-              No
-            </button>
-          </div>
-          <textarea
-            placeholder="Additional comments..."
-            value={formData.comments.recommendation}
-            onChange={(e) => handleCommentChange('recommendation', e.target.value)}
-          />
-        </div>
-
-        <div className="question-block">
-          <h2>3. What do you like so far about the demo?</h2>
-          <div className="checkbox-group">
-            {[
-              'The Text Messages',
-              'The iMessage like preview',
-              'The Slack Opt-in Page',
-              'Ease of Use',
-              'The Survey itself',
-              'N/A'
-            ].map((option) => (
-              <label key={option} className="checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={formData.likes.includes(option)}
-                  onChange={() => handleLikesChange(option)}
-                />
-                {option}
-              </label>
-            ))}
-          </div>
-          <textarea
-            placeholder="Additional comments..."
-            value={formData.comments.likes}
-            onChange={(e) => handleCommentChange('likes', e.target.value)}
-          />
-        </div>
-
-        <div className="question-block">
-          <h2>4. Any thoughts or suggestions?</h2>
-          <textarea
-            placeholder="Share your thoughts..."
-            value={formData.comments.suggestions}
-            onChange={(e) => handleCommentChange('suggestions', e.target.value)}
-            className="large-textarea"
-          />
-        </div>
+        ))}
 
         <button type="submit" className="submit-button">
           Submit Survey
