@@ -80,7 +80,7 @@ const SmsOptIn = ({ workOrderId }) => {
         >
           {theme === 'light' ? '🌙' : '☀️'}
         </button>
-        <img src={`./media/TBT_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" />
+        <img src={`/media/TBT_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" />
       </div>
       <div id="optInBody" className="container mt-4">
         <h3 className="text-center mb-4">Text Message Demo</h3>
@@ -160,8 +160,8 @@ const SmsOptIn = ({ workOrderId }) => {
           </div>
         </form>
         <div className="card text-center mt-4">
-          <div className="card-footer text-muted">
-          Tom Built This text message surveys. Message and data rates may apply. Message frequency varies. Text HELP for help. Text STOP to opt-out.  View our <Link to="/legal/terms-and-conditions" className="text-primary">Terms & Conditions</Link> and <Link to="/legal/privacy-policy" className="text-primary">Privacy Policy</Link>.
+          <div className="card-footer">
+          Tom Built This text message surveys. Message and data rates may apply. Message frequency varies. Text HELP for help. Text STOP to opt-out.  View our <Link to="/legal/terms-and-conditions">Terms & Conditions</Link> and <Link to="/legal/privacy-policy" className="text-primary">Privacy Policy</Link>.
           </div>
         </div>
       </div>

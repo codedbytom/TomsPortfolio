@@ -117,7 +117,7 @@ body {
 /* Add more specific element styles as needed */
 
 a {
-  color: var(--accent-color) !important;
+  color: var(--text-primary) !important;
   text-decoration: none;
   transition: color 0.3s ease;
 }
@@ -142,4 +142,13 @@ li {
 /* Add smooth transitions for theme changes */
 * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+button a,
+.btn a {
+  color: white !important;         /* Inherit the button's text color */
+  text-decoration: none !important;  /* Remove underline */
+  font: inherit;                     /* Inherit font styles */
+  background: none;                  /* Remove any link background */
+  padding: 0;                        /* Remove link padding */
 } 
