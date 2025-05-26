@@ -175,6 +175,13 @@ namespace server.Controllers
         public SurveyComments Comments { get; set; } = new();
     }
 
+    public class DemoSurveySubmission2
+    {
+        public int ContactId { get; set; }
+        public Guid ResponseGuidID { get; set; }
+        public List<SurveyResponseAnswer>? SurveyResponseAnswers { get; set; }
+    }
+
     public class SurveyComments
     {
         public string Rating { get; set; } = "";

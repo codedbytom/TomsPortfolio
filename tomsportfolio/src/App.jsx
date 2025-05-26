@@ -12,6 +12,7 @@ import TermsAndConditions from './pages/Legal/TermsAndConditions';
 import PrivacyPolicy from './pages/Legal/PrivacyPolicy';
 import TestPage from './pages/Admin/TestPage';
 import KillSms from './pages/Admin/KillSms';
+import SurveyFinal from './pages/TextDemo/SurveyFinal';
 
 function App() {
   return (
@@ -23,11 +24,13 @@ function App() {
         <Route path="/coding-nightmares" element={<CodingNightmares />} />
         <Route path="/text-demo/opt-in" element={<OptIn />} />
         <Route path="/text-demo/sms-preview" element={<SmsPreview />} />
-        <Route path="/text-demo/survey" element={<Survey />} />
+        {/* <Route path="/text-demo/survey" element={<Survey />} /> */}
         <Route path="/legal/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/admin/test-page" element={<TestPage />} />
         <Route path="/admin/kill-sms" element={<KillSms />} />
+        <Route path="/text-demo/survey/:surveyId" element={<SurveyFinal />} />
+        <Route path="/text-demo/survey" element={<SurveyFinal />} />
       </Routes>
     </Router>
   )

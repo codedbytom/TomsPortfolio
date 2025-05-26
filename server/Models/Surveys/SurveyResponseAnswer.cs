@@ -21,7 +21,7 @@ namespace server.Models.Surveys
 
         // Optional free text response (used for open-ended or fill-in-the-blank)
         public string? FreeTextAnswer { get; set; }
-
+        public string? Comment { get; set; }
         public DateTime AnsweredAt { get; set; } = DateTime.UtcNow;
     }
 }
