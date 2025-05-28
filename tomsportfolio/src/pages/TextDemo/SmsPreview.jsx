@@ -15,13 +15,24 @@ export default function TextPreview() {
   const [isSmsActive, setIsSmsActive] = useState(false);
   const [smsStatusLoading, setSmsStatusLoading] = useState(true);
   const bottomRef = useRef(null);
-
+  const [messageTemplate, setMessageTemplate] = useState(null);
   useEffect(() => {
     const root = document.getElementById('root');
     root.classList.add('no-padding');
     return () => {
       root.classList.remove('no-padding');
     };
+  }, []);
+
+    
+  useEffect(() => {
+    const loadMessage = async () => {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL_HTTP}/api/OptIn/LoadMessage`);
+      var messagee = response.data.templateText.replace('{Contact Name}', contactName);
+      setMessageTemplate(messagee);
+      console.log('Message loaded:', response.data);
+    };
+    loadMessage();
   }, []);
 
   useEffect(() => {
@@ -85,7 +96,7 @@ export default function TextPreview() {
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL_HTTP}/api/OptIn/SendText`, {
         phoneNumber: phoneNumber,
-        messageContent: `Hey there ${contactName}! Here is an example text message you would receive from Tom Built It`
+        messageContent: messageTemplate
       });
       
       setSent(true);
@@ -180,7 +191,7 @@ export default function TextPreview() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
             >
-              Tom Built It: {contactName}, you've subscribed to our SMS demo. Msg & data rates may apply. Reply HELP for help, STOP to cancel.
+              {messageTemplate}
             </motion.div>
           )}
         </AnimatePresence>

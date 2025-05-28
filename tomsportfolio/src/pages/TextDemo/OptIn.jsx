@@ -12,7 +12,6 @@ const SmsOptIn = ({ workOrderId }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConsenting, setIsConsenting] = useState(false);
   const navigate = useNavigate(); // Import useNavigate
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -32,7 +31,7 @@ const SmsOptIn = ({ workOrderId }) => {
     };
     pingServer();
   }, []);
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Validate phone number length
@@ -133,7 +132,7 @@ const SmsOptIn = ({ workOrderId }) => {
             <label htmlFor="optIn" className="custom-checkbox-label">
               <span className="checkbox-custom"></span>
               <span className="checkbox-text">
-                I agree to receive text message surveys and alerts from Tom Built This.
+                I agree to receive text message surveys and alerts from Tom Built It.
               </span>
             </label>
           </div>
@@ -150,7 +149,7 @@ const SmsOptIn = ({ workOrderId }) => {
         </form>
         <div className="card text-center mt-4">
           <div className="card-footer text-muted">
-          Tom Built This text message surveys. Message and data rates may apply. Message frequency varies. Text HELP for help. Text STOP to opt-out.  View our <Link to="/legal/terms-and-conditions" className="text-primary">Terms & Conditions</Link> and <Link to="/legal/privacy-policy" className="text-primary">Privacy Policy</Link>.
+          Tom Built It text message surveys. Message and data rates may apply. Message frequency varies. Text HELP for help. Text STOP to opt-out.  View our <Link to="/legal/terms-and-conditions" className="text-primary">Terms & Conditions</Link> and <Link to="/legal/privacy-policy" className="text-primary">Privacy Policy</Link>.
           </div>
         </div>
       </div>

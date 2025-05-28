@@ -124,7 +124,14 @@ namespace server.Controllers
                 return StatusCode(500, "An error occurred while retrieving contacts");
             }
         }
-
+        [HttpGet("LoadMessage")]
+        public async Task<IActionResult> LoadMessage()
+        {
+            var messageTemplate =  await _context.MessageTemplates
+                            .Where(mt => mt.MessageTypeId == (int)MessageTypeEnum.OptIn)
+                            .FirstOrDefaultAsync();
+            return Ok(messageTemplate);
+        }
         /// <summary>
         /// Sends a text message to a contact
         /// </summary>
@@ -158,9 +165,12 @@ namespace server.Controllers
                 {
                     SurveyTemplateId = 1, // Fixed ID for demo survey
                     ContactId = contact?.Id ?? 0,
-                    StartedAt = DateTime.UtcNow,
                     // CompletedAt will be null until they complete the survey
                 };
+
+                // Save the survey response first
+                await _context.SurveyResponses.AddAsync(surveyResponse);
+                await _context.SaveChangesAsync();
 
                 // Create message record
                 var message = new Message
@@ -176,10 +186,6 @@ namespace server.Controllers
 
                 try
                 {
-                    // Save the survey response first
-                    await _context.SurveyResponses.AddAsync(surveyResponse);
-                    await _context.SaveChangesAsync();
-
                     // Send the message
                     await _messagingService.SendMessageAsync(message);
                     message.DeliveredAt = DateTime.UtcNow;
