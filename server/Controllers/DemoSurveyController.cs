@@ -31,41 +31,17 @@ namespace server.Controllers
         {
             try
             {
-                // Create survey response
+                // Create survey responses
+
                 var surveyResponse = new SurveyResponse
                 {
                     SurveyTemplateId = 1, // Fixed ID for demo survey
                     ContactId = submission.ContactId,
-                    StartedAt = DateTime.UtcNow,
+                    StartedAt = submission.StartDateTime,
                     CompletedAt = DateTime.UtcNow,
-                    Answers = new List<SurveyResponseAnswer>
-                    {
-                        new SurveyResponseAnswer
-                        {
-                            SurveyQuestionTemplateId = 2,
-                            FreeTextAnswer = submission.Rating.ToString(),
-                            AnsweredAt = DateTime.UtcNow
-                        },
-                        new SurveyResponseAnswer
-                        {
-                            SurveyQuestionTemplateId = 3,
-                            FreeTextAnswer = submission.Recommendation ?? "",
-                            AnsweredAt = DateTime.UtcNow
-                        },
-                        new SurveyResponseAnswer
-                        {
-                            SurveyQuestionTemplateId = 4,
-                            FreeTextAnswer = string.Join(",", submission.Likes),
-                            AnsweredAt = DateTime.UtcNow
-                        },
-                        new SurveyResponseAnswer
-                        {
-                            SurveyQuestionTemplateId = 5,
-                            FreeTextAnswer = submission.Comments.Suggestions,
-                            AnsweredAt = DateTime.UtcNow
-                        }
-                    }
+                    Answers = submission.Answers
                 };
+                
                 foreach (var a in surveyResponse.Answers)
                 {
                     Console.WriteLine($"Answer QID: {a.SurveyQuestionTemplateId}");
@@ -74,14 +50,14 @@ namespace server.Controllers
                 await _surveyService.SaveSurveyResponseAsync(surveyResponse);
 
                 // Generate and send follow-up message
-                var followUpMessage = GenerateFollowUpMessage(submission);
+                //var followUpMessage = GenerateFollowUpMessage(submission);
                 if (submission.ContactId != 0)
                 {
                     var contact = submission.ContactId;
                     await _messageService.SendMessageAsync(new server.Models.Message
                     {
                         ContactId = contact,
-                        Content = followUpMessage,
+                        //Content = followUpMessage,
                         SentAt = DateTime.UtcNow
                     });
                 }
@@ -141,45 +117,16 @@ namespace server.Controllers
 
         private string GenerateFollowUpMessage(DemoSurveySubmission submission)
         {
-            var message = $"Thank you for your feedback! You rated our demo a {submission.Rating}/10";
-            
-            if (submission.Recommendation == "Yes")
-            {
-                message += " and would recommend it to others.";
-            }
-            else
-            {
-                message += " but wouldn't recommend it yet.";
-            }
-
-            if (submission.Likes.Any())
-            {
-                message += $"\n\nYou particularly liked: {string.Join(", ", submission.Likes)}.";
-            }
-
-            if (!string.IsNullOrEmpty(submission.Comments.Suggestions))
-            {
-                message += "\n\nWe appreciate your additional feedback and will take it into consideration!";
-            }
-
-            return message;
+            return string.Empty;
         }
     }
 
     public class DemoSurveySubmission
     {
+        public DateTime StartDateTime { get; set; }
         public int ContactId { get; set; }
-        public int Rating { get; set; }
-        public string? Recommendation { get; set; }
-        public List<string> Likes { get; set; } = new();
-        public SurveyComments Comments { get; set; } = new();
-    }
-
-    public class DemoSurveySubmission2
-    {
-        public int ContactId { get; set; }
-        public Guid ResponseGuidID { get; set; }
-        public List<SurveyResponseAnswer>? SurveyResponseAnswers { get; set; }
+        public string? EncodedGuidID { get; set; }
+        public List<SurveyResponseAnswer>? Answers { get; set; }
     }
 
     public class SurveyComments

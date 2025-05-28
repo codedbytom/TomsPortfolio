@@ -16,6 +16,13 @@ const SurveyFinal = () => {
     const { surveyId } = useParams();
     const [searchParams] = useSearchParams();
     const [answers, setAnswers] = useState({});
+    const [comments, setComments] = useState({});
+    const [formData, setFormData] = useState({
+        answers: {},
+        contactId: 0,
+        startDateTime: new Date().toISOString(),
+        responseGuidID: '00000000-0000-0000-0000-000000000000'
+    });
     
     useEffect(() => {
         const fetchSurvey = async () => {
@@ -24,12 +31,18 @@ const SurveyFinal = () => {
                 const response = await axios.get(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/${id}`);
                 setSurvey(response.data);
                 
-                // Initialize answers state based on questions
+                // Initialize answers and comments state based on questions
                 const initialAnswers = {};
+                const initialComments = {};
                 response.data.questions.forEach(q => {
-                    initialAnswers[q.id] = q.questionType === 'MultipleChoice' ? [] : '';
+                    initialAnswers[q.id] = q.questionTypeID === 3 ? [] : '';
+                    initialComments[q.id] = '';
                 });
                 setAnswers(initialAnswers);
+                setComments(initialComments);
+                setFormData({
+                    responseGuidID: id
+                });
             } catch (error) {
                 console.error('Error fetching survey:', error);
             } finally {
@@ -47,6 +60,13 @@ const SurveyFinal = () => {
         }));
     };
 
+    const handleCommentChange = (questionId, value) => {
+        setComments(prev => ({
+            ...prev,
+            [questionId]: value
+        }));
+    };
+
     const handleMultiChoiceChange = (questionId, option) => {
         setAnswers(prev => ({
             ...prev,
@@ -56,6 +76,49 @@ const SurveyFinal = () => {
         }));
     };
     
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        // Transform answers object into array of SurveyResponseAnswer objects
+        const answersArray = Object.entries(answers).flatMap(([questionId, answer]) => {
+            if (Array.isArray(answer)) {
+                // Multiple choice: one SurveyResponseAnswer per selected option
+                return answer.map(option => ({
+                    surveyQuestionTemplateId: parseInt(questionId),
+                    freeTextAnswer: option,
+                    answeredAt: new Date().toISOString(),
+                    comment: comments[questionId]
+                }));
+            } else {
+                // Single answer: one SurveyResponseAnswer
+                return [{
+                    surveyQuestionTemplateId: parseInt(questionId),
+                    freeTextAnswer: answer.toString(),
+                    answeredAt: new Date().toISOString(),
+                    comment: comments[questionId]
+                }];
+            }
+        });
+
+        // Transform comments object into array
+        const commentsArray = Object.values(comments);
+
+        const submitData = {
+            Answers: answersArray,
+            EncodedGuidID: formData.responseGuidID,
+            ContactId: 2,
+            StartDateTime: formData.startDateTime
+        };
+
+        console.log('Survey submitted:', submitData);
+        
+        try{ 
+          const response = await axios.post(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/submit`, submitData);
+        } catch (error) {
+          console.error('Error submitting survey:', error);
+        }
+    };
+
     if (isLoading) {
         return <LoadingSkeleton />;
     }
@@ -67,7 +130,7 @@ const SurveyFinal = () => {
     return (
         <div className="survey-container">
             <h1>{survey.title}</h1>
-            <form onSubmit={(e) => e.preventDefault()}>
+            <form onSubmit={handleSubmit}>
                 {survey.questions.map((question) => (
                     <div key={question.id} className="question-block">
                         <h2>{question.text}</h2>
@@ -95,6 +158,25 @@ const SurveyFinal = () => {
                             />
                         )}
 
+                        {question.questionTypeID === 2 && (
+                            <div className="recommendation-buttons">
+                                <button
+                                    type="button"
+                                    className={`recommendation-button ${answers[question.id] === 'Yes' ? 'selected' : ''}`}
+                                    onClick={() => handleAnswerChange(question.id, 'Yes')}
+                                >
+                                    Yes
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`recommendation-button ${answers[question.id] === 'No' ? 'selected' : ''}`}
+                                    onClick={() => handleAnswerChange(question.id, 'No')}
+                                >
+                                    No
+                                </button>
+                            </div>
+                        )}
+
                         {question.questionTypeID === 1 && (
                             <div className="rating-container">
                                 {[...Array(10)].map((_, index) => (
@@ -109,6 +191,14 @@ const SurveyFinal = () => {
                                 ))}
                             </div>
                         )}
+
+                       {question.questionTypeID !== 4 && ( <textarea
+                            placeholder="Additional comments..."
+                            value={comments[question.id] || ''}
+                            onChange={(e) => handleCommentChange(question.id, e.target.value)}
+                            className="comment-textarea"
+                        />)} 
+                        {/* only show for non-text questions */}
                     </div>
                 ))}
                 
