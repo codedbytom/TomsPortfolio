@@ -50,12 +50,9 @@ const Survey = () => {
     } catch (error) {
       console.error('Error submitting survey:', error);
     }
+    navigate('/thank-you');
   };
-  // useEffect(() => {
-  //     fetch(`/api/survey/1`)
-  //       .then(res => res.json())
-  //       .then(setSurvey);
-  // }, []);
+
   return (
     <div className="survey-container">
       <div className="survey-header">

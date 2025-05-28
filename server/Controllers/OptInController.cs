@@ -170,6 +170,7 @@ namespace server.Controllers
                     SentAt = DateTime.UtcNow,
                     ContactId = contact?.Id,
                     MessageTypeID = (int)MessageTypeEnum.OptIn,
+                    SurveyResponseId = surveyResponse.Id,
                     Url = $"/survey/{_guidEncoder.EncodeGuidToBase64(surveyResponse.ResponseGuid)}" // Use the service
                 };
 

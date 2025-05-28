@@ -29,9 +29,12 @@ export default function TextPreview() {
 
     const timers = [
       setTimeout(() => setStep(0), 2000), // Show typing 
-      setTimeout(() => setStep(1), 2000), // Show instruction
+      setTimeout(() => setStep(1), 2000), // Show welcome message
       setTimeout(() => setStep(2), 3000), // Show typing
-      setTimeout(() => setStep(3), 5000), // Show message
+      setTimeout(() => setStep(3), 5000), // Show message sent to phone number
+      setTimeout(() => setStep(4), 5000), // Show typing
+      setTimeout(() => setStep(5), 7000), // Show submit button
+      setTimeout(() => setStep(6), 7000), // Show followup
     ];
 
     return () => timers.forEach(clearTimeout);
@@ -86,8 +89,8 @@ export default function TextPreview() {
       });
       
       setSent(true);
-      setStep(4); //Show typing indicator
-      setTimeout(() => setStep(5), 1500); //Show message from the phone number
+      setStep(7); //Show typing indicator
+      setTimeout(() => setStep(8), 1500); //Show message from the phone number
     } catch (error) {
       console.error('Error sending text:', error);
       alert('Failed to send text message. Please try again.');
@@ -177,32 +180,43 @@ export default function TextPreview() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
             >
-              Tom Built This: {contactName}, you've subscribed to our SMS demo. Msg & data rates may apply. Reply HELP for help, STOP to cancel.
+              Tom Built It: {contactName}, you've subscribed to our SMS demo. Msg & data rates may apply. Reply HELP for help, STOP to cancel.
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {/* Typing Indicator */}
+        <AnimatePresence>
+          {(step === 4) && (
+            <motion.div
+              key="typing"
+              className="typing-indicator flex space-x-1 mb-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></span>
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+
+        <AnimatePresence>
+          {step >= 6 && (
+            <motion.div
+              key="followup"
+              className="text-bubble system-message btn-primary bg-gray-100 text-blue-800 rounded-xl px-4 py-2 mt-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+            >Click the button below to send the text message.
             </motion.div>
           )}
         </AnimatePresence>
         
-        
-        {/* Send Button */}
-        {step >= 3 && !sent && (
-          <div className="mt-4">
-        <div className="ios-message-bar">
-          <div className="ios-message-input">
-
-            <span className="message-text">Tom Built This: {contactName}, you've subscribed to our SMS demo. Msg & data rates may apply. Reply HELP for help, STOP to cancel.</span>
-          </div>
-          <button
-            className={`send-btn${isSmsActive ? ' active' : ''}`}
-            onClick={sendText}
-            disabled={!isSmsActive}
-          >
-            Send
-          </button>
-        </div>
-        </div>
-        )}
-      <AnimatePresence>
-          {(step === 4) && (
+        <AnimatePresence>
+          {(step === 7) && (
             <motion.div
               key="typing"
               className="typing-indicator flex space-x-1 mb-2"
@@ -218,7 +232,7 @@ export default function TextPreview() {
         </AnimatePresence>
         {/* Final Confirmation Bubble */}
         <AnimatePresence>
-          {step === 5 && (
+          {step >= 8 && (
             <motion.div
               key="followup"
               className="text-bubble system-message btn-primary bg-gray-100 text-blue-800 rounded-xl px-4 py-2 mt-4"
@@ -230,6 +244,26 @@ export default function TextPreview() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Send Button */}
+        {step >= 3 && !sent && (
+          <div className="mt-4">
+        <div className="ios-message-bar">
+          <div className="ios-message-input">
+
+            <span className="message-text">Tom Built It: {contactName}, you've subscribed to our SMS demo. Msg & data rates may apply. Reply HELP for help, STOP to cancel.</span>
+          </div>
+          <button
+            className={`send-btn ${isSmsActive ? ' active' : ''}`}
+            onClick={sendText}
+            disabled={!isSmsActive}
+          >
+            Send
+          </button>
+        </div>
+        </div>
+        )}
+      
       </div>
       <div ref={bottomRef} />
       </div>

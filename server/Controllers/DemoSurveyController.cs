@@ -32,35 +32,17 @@ namespace server.Controllers
             try
             {
                 // Create survey responses
+                var surveyResponse = _context.SurveyResponses
+                                        .Where(sr => sr.ResponseGuid == _guidEncoderService.DecodeBase64ToGuid(submission.EncodedGuidID))
+                                        .FirstOrDefault();
 
-                var surveyResponse = new SurveyResponse
-                {
-                    SurveyTemplateId = 1, // Fixed ID for demo survey
-                    ContactId = submission.ContactId,
-                    StartedAt = submission.StartDateTime,
-                    CompletedAt = DateTime.UtcNow,
-                    Answers = submission.Answers
-                };
-                
-                foreach (var a in surveyResponse.Answers)
-                {
-                    Console.WriteLine($"Answer QID: {a.SurveyQuestionTemplateId}");
-                }
-                // Save the response
-                await _surveyService.SaveSurveyResponseAsync(surveyResponse);
+                if (surveyResponse == null) return StatusCode(500, "Survey Response Doesn't Exist");
 
-                // Generate and send follow-up message
-                //var followUpMessage = GenerateFollowUpMessage(submission);
-                if (submission.ContactId != 0)
-                {
-                    var contact = submission.ContactId;
-                    await _messageService.SendMessageAsync(new server.Models.Message
-                    {
-                        ContactId = contact,
-                        //Content = followUpMessage,
-                        SentAt = DateTime.UtcNow
-                    });
-                }
+                surveyResponse.CompletedAt = DateTime.UtcNow;
+                surveyResponse.Answers = submission.Answers;
+
+                //Save the response
+                await _context.SaveChangesAsync();
 
                 return Ok(new { message = "Survey submitted successfully" });
             }
@@ -68,6 +50,21 @@ namespace server.Controllers
             {
                 return StatusCode(500, new { error = "Failed to submit survey", details = ex.Message });
             }
+        }
+
+        [HttpGet("CompletedSurvey")]
+        public async Task<IActionResult> SendCompletionText(string encodedGuidID)
+        {
+            Guid surveyResponseGuid = _guidEncoderService.DecodeBase64ToGuid(encodedGuidID);
+            var surveyReponse = await _context.SurveyResponses
+                                        .Include(sr => sr.Contact)
+                                        .Where(sr => sr.ResponseGuid == surveyResponseGuid)
+                                        .FirstOrDefaultAsync();
+
+            if(surveyReponse == null) return NotFound();
+
+
+            return Ok(new { message = "Thank you for submitting the survey" });
         }
 
         [HttpGet("{surveyResponseID}")]
@@ -124,16 +121,7 @@ namespace server.Controllers
     public class DemoSurveySubmission
     {
         public DateTime StartDateTime { get; set; }
-        public int ContactId { get; set; }
         public string? EncodedGuidID { get; set; }
         public List<SurveyResponseAnswer>? Answers { get; set; }
-    }
-
-    public class SurveyComments
-    {
-        public string Rating { get; set; } = "";
-        public string Recommendation { get; set; } = "";
-        public string Likes { get; set; } = "";
-        public string Suggestions { get; set; } = "";
     }
 } 

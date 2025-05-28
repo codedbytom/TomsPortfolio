@@ -7,12 +7,12 @@ import Hobbies from './pages/Hobbies';
 import CodingNightmares from './pages/CodingNightmares';
 import OptIn from './pages/TextDemo/OptIn';
 import SmsPreview from './pages/TextDemo/SmsPreview';
-import Survey from './pages/TextDemo/Survey';
 import TermsAndConditions from './pages/Legal/TermsAndConditions';
 import PrivacyPolicy from './pages/Legal/PrivacyPolicy';
 import TestPage from './pages/Admin/TestPage';
 import KillSms from './pages/Admin/KillSms';
 import SurveyFinal from './pages/TextDemo/SurveyFinal';
+import ThankYou from './pages/TextDemo/ThankYou';
 
 function App() {
   return (
@@ -31,6 +31,7 @@ function App() {
         <Route path="/admin/kill-sms" element={<KillSms />} />
         <Route path="/text-demo/survey/:surveyId" element={<SurveyFinal />} />
         <Route path="/text-demo/survey" element={<SurveyFinal />} />
+        <Route path="/text-demo/thank-you" element={<ThankYou />} />
       </Routes>
     </Router>
   )

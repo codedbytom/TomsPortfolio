@@ -226,3 +226,12 @@ textarea.large-textarea {
 .send-btn:disabled {
   cursor: not-allowed;
 }
+/* pulse animation for the send button on the preview page*/
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+.send-btn {
+  animation: pulse 1.5s infinite;
+}

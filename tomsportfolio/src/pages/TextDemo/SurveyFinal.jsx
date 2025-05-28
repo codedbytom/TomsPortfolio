@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 const LoadingSkeleton = () => (
@@ -11,6 +12,7 @@ const LoadingSkeleton = () => (
 );
 
 const SurveyFinal = () => {
+    const navigate = useNavigate(); // Import useNavigate
     const [survey, setSurvey] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const { surveyId } = useParams();
@@ -19,14 +21,14 @@ const SurveyFinal = () => {
     const [comments, setComments] = useState({});
     const [formData, setFormData] = useState({
         answers: {},
-        contactId: 0,
-        startDateTime: new Date().toISOString(),
+        startDateTime: new Date().getDate(),
         responseGuidID: '00000000-0000-0000-0000-000000000000'
     });
     
     useEffect(() => {
         const fetchSurvey = async () => {
             try {
+                console.log('Fetching survey');
                 const id = surveyId || searchParams.get('id') || 'U5bXdq6KnEqyt2DO5grNUQ';
                 const response = await axios.get(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/${id}`);
                 setSurvey(response.data);
@@ -106,7 +108,6 @@ const SurveyFinal = () => {
         const submitData = {
             Answers: answersArray,
             EncodedGuidID: formData.responseGuidID,
-            ContactId: 2,
             StartDateTime: formData.startDateTime
         };
 
@@ -116,6 +117,9 @@ const SurveyFinal = () => {
           const response = await axios.post(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/submit`, submitData);
         } catch (error) {
           console.error('Error submitting survey:', error);
+        }
+        finally{
+          navigate( { pathname: '/text-demo/thank-you' });
         }
     };
 
@@ -129,6 +133,7 @@ const SurveyFinal = () => {
 
     return (
         <div className="survey-container">
+            <img src={`/media/TBT_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" /> 
             <h1>{survey.title}</h1>
             <form onSubmit={handleSubmit}>
                 {survey.questions.map((question) => (
