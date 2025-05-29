@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useNavigate, Link } from 'react-router-dom';
+import './Survey.css';
 import axios from 'axios';
 
 const LoadingSkeleton = () => (
@@ -25,6 +26,13 @@ const SurveyFinal = () => {
         responseGuidID: '00000000-0000-0000-0000-000000000000'
     });
     
+    // Do this to remove the spacing on the root just for the survey page for mobile
+    useEffect(() => {
+    const root = document.getElementById('root');
+    root.classList.add('survey-mode');
+    return () => root.classList.remove('survey-mode');
+    }, []);
+
     useEffect(() => {
         const fetchSurvey = async () => {
             try {
