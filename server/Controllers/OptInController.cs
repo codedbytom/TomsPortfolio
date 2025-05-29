@@ -6,6 +6,7 @@ using server.Services;
 using server.Helpers;
 using Vonage.Messages;
 using System.Text;
+using Microsoft.Extensions.Options;
 
 namespace server.Controllers
 {
@@ -18,16 +19,20 @@ namespace server.Controllers
         private readonly IMessagingService _messagingService;
         private readonly IGuidEncoderService _guidEncoder;
 
+        private readonly string _apiUrl;
+
         public OptInController(
-            ILogger<OptInController> logger, 
-            AppDbContext context, 
+            ILogger<OptInController> logger,
+            AppDbContext context,
             IMessagingService messagingService,
-            IGuidEncoderService guidEncoder)
+            IGuidEncoderService guidEncoder,
+            IOptions<AppSettings> appSettings)
         {
             _logger = logger;
             _context = context;
             _messagingService = messagingService;
             _guidEncoder = guidEncoder;
+            _apiUrl = appSettings.Value.PublicApiUrl == null ? "" : appSettings.Value.PublicApiUrl;
         }
 
         /// <summary>
@@ -104,6 +109,7 @@ namespace server.Controllers
                 WasSuccessful = true
             };
         }
+
         /// <summary>
         /// Retrieves all opted-in contacts.
         /// </summary>
@@ -173,33 +179,43 @@ namespace server.Controllers
                 await _context.SaveChangesAsync();
 
                 // Create message record
-                var message = new Message
+                var optInMessage = new Message
                 {
                     PhoneNumber = request.PhoneNumber,
                     Content = request.MessageContent,
                     SentAt = DateTime.UtcNow,
                     ContactId = contact?.Id,
                     MessageTypeID = (int)MessageTypeEnum.OptIn,
-                    SurveyResponseId = surveyResponse.Id,
-                    Url = $"/survey/{_guidEncoder.EncodeGuidToBase64(surveyResponse.ResponseGuid)}" // Use the service
+                    SurveyResponseId = surveyResponse.Id
                 };
 
+                var surveyMessage = (Message)optInMessage.Clone();
+                surveyMessage.Content = await _context.MessageTemplates
+                                                .Where(mt => mt.MessageTypeId == (int)MessageTypeEnum.SurveyLink)
+                                                .Select(mt => mt.TemplateText)
+                                                .FirstOrDefaultAsync() ?? string.Empty;
+
+                surveyMessage.Url = $"/text-demo/survey/{_guidEncoder.EncodeGuidToBase64(surveyResponse.ResponseGuid)}"; // Use the service
+
+                var fullUrl = $"{_apiUrl}{surveyMessage.Url}"; // Use the service
+                surveyMessage.Content = surveyMessage.Content.Replace("{url}", fullUrl);
                 try
                 {
                     // Send the message
-                    await _messagingService.SendMessageAsync(message);
-                    message.DeliveredAt = DateTime.UtcNow;
+                    await _messagingService.SendMessageAsync(optInMessage);
+                    await Task.Delay(TimeSpan.FromSeconds(3));
+                    await _messagingService.SendMessageAsync(surveyMessage);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error sending message via Vonage");
-                    message.ErrorMessage = ex.Message;
+                    optInMessage.ErrorMessage = ex.Message;
                     // Don't throw here, we want to save the error message
                 }
 
-                if (!string.IsNullOrEmpty(message.ErrorMessage))
+                if (!string.IsNullOrEmpty(optInMessage.ErrorMessage))
                 {
-                    return StatusCode(500, new { error = "Message failed to send", details = message.ErrorMessage });
+                    return StatusCode(500, new { error = "Message failed to send", details = optInMessage.ErrorMessage });
                 }
 
                 return Ok(new { message = "Text message sent successfully" });
