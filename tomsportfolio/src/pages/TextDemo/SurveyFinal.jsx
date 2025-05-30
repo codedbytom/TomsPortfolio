@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useNavigate, Link } from 'react-router-dom';
 import './Survey.css';
@@ -20,9 +20,10 @@ const SurveyFinal = () => {
     const [searchParams] = useSearchParams();
     const [answers, setAnswers] = useState({});
     const [comments, setComments] = useState({});
+    const startDateRef = useRef(new Date().toISOString());
     const [formData, setFormData] = useState({
         answers: {},
-        startDateTime: new Date().getDate(),
+        startDateTime: startDateRef,
         responseGuidID: '00000000-0000-0000-0000-000000000000'
     });
     
@@ -116,7 +117,7 @@ const SurveyFinal = () => {
         const submitData = {
             Answers: answersArray,
             EncodedGuidID: formData.responseGuidID,
-            StartDateTime: formData.startDateTime
+            StartDateTime: startDateRef.current
         };
 
         console.log('Survey submitted:', submitData);

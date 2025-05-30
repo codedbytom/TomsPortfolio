@@ -6,6 +6,8 @@ using server.data;
 using Vonage.Common;
 using server.Models.Surveys;
 using server.Models.DTO;
+using Vonage.Meetings.DeleteTheme;
+using Microsoft.Extensions.Options;
 
 namespace server.Controllers
 {
@@ -17,13 +19,20 @@ namespace server.Controllers
         private readonly IMessagingService _messageService;
         private readonly AppDbContext _context;
         private readonly IGuidEncoderService _guidEncoderService;
+        private readonly string _apiUrl;
 
-        public DemoSurveyController(ISurveyService surveyService, IMessagingService messageService, AppDbContext context, IGuidEncoderService guidEncoderService)
+        public DemoSurveyController(
+            ISurveyService surveyService,
+            IMessagingService messageService,
+            AppDbContext context,
+            IGuidEncoderService guidEncoderService,
+            IOptions<AppSettings> options)
         {
             _surveyService = surveyService;
             _messageService = messageService;
             _context = context;
             _guidEncoderService = guidEncoderService;
+            _apiUrl = options.Value.PublicApiUrl ?? "";
         }
 
         [HttpPost("submit")]
@@ -33,13 +42,18 @@ namespace server.Controllers
             {
                 // Create survey responses
                 var surveyResponse = _context.SurveyResponses
-                                        .Where(sr => sr.ResponseGuid == _guidEncoderService.DecodeBase64ToGuid(submission.EncodedGuidID))
+                                        .Where(sr => sr.ResponseGuid == _guidEncoderService.DecodeBase64ToGuid(submission.EncodedGuidID ?? ""))
                                         .FirstOrDefault();
 
                 if (surveyResponse == null) return StatusCode(500, "Survey Response Doesn't Exist");
 
                 surveyResponse.CompletedAt = DateTime.UtcNow;
                 surveyResponse.Answers = submission.Answers;
+
+                surveyResponse?.Answers?.ForEach(a =>
+                {
+                    a.SurveyResponseId = surveyResponse.Id;
+                }) ;
 
                 //Save the response
                 await _context.SaveChangesAsync();
@@ -52,7 +66,7 @@ namespace server.Controllers
             }
         }
 
-        [HttpGet("CompletedSurvey")]
+        [HttpGet("Completed/{surveyResponseID}")]
         public async Task<IActionResult> SendCompletionText(string encodedGuidID)
         {
             Guid surveyResponseGuid = _guidEncoderService.DecodeBase64ToGuid(encodedGuidID);
@@ -61,8 +75,25 @@ namespace server.Controllers
                                         .Where(sr => sr.ResponseGuid == surveyResponseGuid)
                                         .FirstOrDefaultAsync();
 
-            if(surveyReponse == null) return NotFound();
+            var messageTemplateText = await _context.MessageTemplates
+                                        .Where(mt => mt.MessageTypeId == (int)MessageTypeEnum.SurveyResults)
+                                        .Select(mt => mt.TemplateText)
+                                        .FirstOrDefaultAsync();
 
+            if (surveyReponse == null || messageTemplateText == null) return NotFound();
+            var baseUrl = $"{_apiUrl}/text-demo/survey/results/{encodedGuidID}";
+
+            var completionText = new Models.Message
+            {
+                PhoneNumber = surveyReponse?.Contact?.PhoneNumber ?? "",
+                Content = messageTemplateText?.Replace("{url}", baseUrl) ?? "Thank you for participating",
+                ContactId = surveyReponse?.Contact?.Id,
+                MessageTypeID = (int)MessageTypeEnum.SurveyResults,
+                SurveyResponseId = surveyReponse?.Id,
+                SentAt = DateTime.UtcNow
+            };
+
+            await _messageService.SendMessageAsync(completionText);
 
             return Ok(new { message = "Thank you for submitting the survey" });
         }
@@ -120,7 +151,7 @@ namespace server.Controllers
 
     public class DemoSurveySubmission
     {
-        public DateTime StartDateTime { get; set; }
+        public string? StartDateTime { get; set; }
         public string? EncodedGuidID { get; set; }
         public List<SurveyResponseAnswer>? Answers { get; set; }
     }
