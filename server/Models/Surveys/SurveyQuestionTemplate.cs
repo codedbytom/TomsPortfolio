@@ -17,6 +17,6 @@ namespace server.Models
         [ForeignKey("QuestionType")]
         public int QuestionTypeID {get; set;}
         public QuestionType? QuestionType { get; set; }
-        public List<AnswerOptionTemplate>? AnswerOptions { get; set; }
+        public List<AnswerOptionTemplate> AnswerOptions { get; set; } = new();
     }
 }

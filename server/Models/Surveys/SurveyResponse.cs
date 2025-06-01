@@ -12,8 +12,8 @@ namespace server.Models{
         public SurveyTemplate? SurveyTemplate { get; set; }  // Navigation property
         
         public int ContactId { get; set; }  // Who answered it
-        public Contact? Contact { get; set; }  // Navigation property
-        public List<SurveyResponseAnswer>? Answers { get; set; }  // Their answers
+        public Contact Contact { get; set; } = new Contact(); // Navigation property
+        public List<SurveyResponseAnswer> Answers { get; set; } = new List<SurveyResponseAnswer>();  // Their answers
         public DateTime CreatedDateTime { get; set; } = DateTime.UtcNow;
         public DateTime StartedAt { get; set; }
         public DateTime? CompletedAt { get; set; }

@@ -8,7 +8,7 @@ namespace server.Models{
         [ForeignKey("SurveyQuestionTemplate")]
         public int SurveyQuestionTemplateId { get; set; }
         [JsonIgnore]
-        public SurveyQuestionTemplate? SurveyQuestionTemplate { get; set; }
+        public SurveyQuestionTemplate? SurveyQuestionTemplate { get; set; } = new();
 
         public string Text { get; set; } = string.Empty; // What the user sees
         public string? Value { get; set; }               // Optional backend value

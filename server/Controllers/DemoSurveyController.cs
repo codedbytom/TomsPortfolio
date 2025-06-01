@@ -67,9 +67,9 @@ namespace server.Controllers
         }
 
         [HttpGet("Completed/{surveyResponseID}")]
-        public async Task<IActionResult> SendCompletionText(string encodedGuidID)
+        public async Task<IActionResult> SendCompletionText(string surveyResponseID)
         {
-            Guid surveyResponseGuid = _guidEncoderService.DecodeBase64ToGuid(encodedGuidID);
+            Guid surveyResponseGuid = _guidEncoderService.DecodeBase64ToGuid(surveyResponseID);
             var surveyReponse = await _context.SurveyResponses
                                         .Include(sr => sr.Contact)
                                         .Where(sr => sr.ResponseGuid == surveyResponseGuid)
@@ -81,7 +81,7 @@ namespace server.Controllers
                                         .FirstOrDefaultAsync();
 
             if (surveyReponse == null || messageTemplateText == null) return NotFound();
-            var baseUrl = $"{_apiUrl}/text-demo/survey/results/{encodedGuidID}";
+            var baseUrl = $"{_apiUrl}/text-demo/survey/results/{surveyResponseID}";
 
             var completionText = new Models.Message
             {
@@ -96,6 +96,28 @@ namespace server.Controllers
             await _messageService.SendMessageAsync(completionText);
 
             return Ok(new { message = "Thank you for submitting the survey" });
+        }
+
+        [HttpGet("results/{surveyResponseID}")]
+        public async Task<IActionResult> GetCompletedResults(string surveyResponseID)
+        {
+            Guid surveyResponseGuid = _guidEncoderService.DecodeBase64ToGuid(surveyResponseID);
+
+            var surveyReponse = await _context.SurveyResponses
+                                    .Include(sr => sr.Answers)
+                                    .Where(sr => sr.ResponseGuid == surveyResponseGuid)
+                                    .FirstOrDefaultAsync();
+
+            if (surveyReponse == null || surveyReponse?.Contact == null || surveyReponse.Answers == null)
+                return NotFound();
+            var completedSurveyDTO = new CompletedSurveyDTO
+            {
+                SurveyTemplateId = 1,
+                Title = surveyReponse?.SurveyTemplate?.SurveyName ?? "Sample Survey",
+                SubmittedAnswers = surveyReponse?.Answers ?? []
+            };
+
+            return Ok(completedSurveyDTO);
         }
 
         [HttpGet("{surveyResponseID}")]

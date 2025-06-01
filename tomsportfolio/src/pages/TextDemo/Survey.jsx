@@ -1,155 +1,241 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useSearchParams, useLocation } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './Survey.css';
+import axios from 'axios';
 
-const Survey = () => {
-  const [formData, setFormData] = useState({
-    rating: '',
-    recommendation: '',
-    likes: [],
-    comments: {
-      rating: '',
-      recommendation: '',
-      likes: '',
-      suggestions: ''
-    }
-  });
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleCommentChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      comments: {
-        ...prev.comments,
-        [field]: value
-      }
-    }));
-  };
-
-  const handleLikesChange = (option) => {
-    setFormData(prev => ({
-      ...prev,
-      likes: prev.likes.includes(option)
-        ? prev.likes.filter(item => item !== option)
-        : [...prev.likes, option]
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log('Survey submitted:', formData);
-    
-    try{ 
-      const response = await axios.post(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/submit`, formData);
-    } catch (error) {
-      console.error('Error submitting survey:', error);
-    }
-    navigate('/thank-you');
-  };
-
-  return (
-    <div className="survey-container">
-      <div className="survey-header">
-        <h1>TomBuiltThis</h1>
-      </div>
-      
-      <form onSubmit={handleSubmit} className="survey-form">
-        <div className="question-block">
-          <h2>1. What is your thoughts on the demo so far? (1 being awful and 10 being perfect)</h2>
-          <div className="rating-container">
-            {[...Array(10)].map((_, index) => (
-              <button
-                key={index + 1}
-                type="button"
-                className={`rating-button ${formData.rating === (index + 1) ? 'selected' : ''}`}
-                onClick={() => handleInputChange('rating', index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
-          <textarea
-            placeholder="Additional comments..."
-            value={formData.comments.rating}
-            onChange={(e) => handleCommentChange('rating', e.target.value)}
-          />
-        </div>
-
-        <div className="question-block">
-          <h2>2. Would you recommend this demo to a friend or family member?</h2>
-          <div className="recommendation-buttons">
-            <button
-              type="button"
-              className={`recommendation-button ${formData.recommendation === 'Yes' ? 'selected' : ''}`}
-              onClick={() => handleInputChange('recommendation', 'Yes')}
-            >
-              Yes
-            </button>
-            <button
-              type="button"
-              className={`recommendation-button ${formData.recommendation === 'No' ? 'selected' : ''}`}
-              onClick={() => handleInputChange('recommendation', 'No')}
-            >
-              No
-            </button>
-          </div>
-          <textarea
-            placeholder="Additional comments..."
-            value={formData.comments.recommendation}
-            onChange={(e) => handleCommentChange('recommendation', e.target.value)}
-          />
-        </div>
-
-        <div className="question-block">
-          <h2>3. What do you like so far about the demo?</h2>
-          <div className="checkbox-group">
-            {[
-              'The Text Messages',
-              'The iMessage like preview',
-              'The Slack Opt-in Page',
-              'Ease of Use',
-              'The Survey itself',
-              'N/A'
-            ].map((option) => (
-              <label key={option} className="checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={formData.likes.includes(option)}
-                  onChange={() => handleLikesChange(option)}
-                />
-                {option}
-              </label>
-            ))}
-          </div>
-          <textarea
-            placeholder="Additional comments..."
-            value={formData.comments.likes}
-            onChange={(e) => handleCommentChange('likes', e.target.value)}
-          />
-        </div>
-
-        <div className="question-block">
-          <h2>4. Any thoughts or suggestions?</h2>
-          <textarea
-            placeholder="Share your thoughts..."
-            value={formData.comments.suggestions}
-            onChange={(e) => handleCommentChange('suggestions', e.target.value)}
-            className="large-textarea"
-          />
-        </div>
-
-        <button type="submit" className="submit-button">
-          Submit Survey
-        </button>
-      </form>
+const LoadingSkeleton = () => (
+    <div className="loading-skeleton">
+        <div className="skeleton-title" style={{ width: '60%', height: '32px', background: '#f0f0f0', marginBottom: '20px' }}></div>
+        <div className="skeleton-text" style={{ width: '80%', height: '20px', background: '#f0f0f0', marginBottom: '10px' }}></div>
+        <div className="skeleton-text" style={{ width: '70%', height: '20px', background: '#f0f0f0' }}></div>
     </div>
-  );
+);
+
+const SurveyFinal = () => {
+    const navigate = useNavigate(); // Import useNavigate
+    const [survey, setSurvey] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const { surveyId } = useParams();
+    const [searchParams] = useSearchParams();
+    const [answers, setAnswers] = useState({});
+    const [comments, setComments] = useState({});
+    const location = useLocation();
+
+    const mode = location.pathname.includes('results') ? 'results' : 'new';
+    const startDateRef = useRef(new Date().toISOString());
+    const [formData, setFormData] = useState({
+        answers: {},
+        startDateTime: startDateRef,
+        responseGuidID: '00000000-0000-0000-0000-000000000000'
+    });
+    
+    // Do this to remove the spacing on the root just for the survey page for mobile
+    useEffect(() => {
+    const root = document.getElementById('root');
+    root.classList.add('survey-mode');
+    return () => root.classList.remove('survey-mode');
+    }, []);
+
+    useEffect(() => {
+        const fetchSurvey = async () => {
+            try {
+                console.log('Fetching survey');
+                const id = surveyId || searchParams.get('id') || 'U5bXdq6KnEqyt2DO5grNUQ';
+                if(mode == 'results' && id){
+                    const response = await axios.get(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/results/${id}`);
+                    setSurvey(response.data);
+                }
+                else{
+                    const response = await axios.get(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/${id}`);
+                    setSurvey(response.data);
+                    
+                    // Initialize answers and comments state based on questions
+                    const initialAnswers = {};
+                    const initialComments = {};
+                    response.data.questions.forEach(q => {
+                        initialAnswers[q.id] = q.questionTypeID === 3 ? [] : '';
+                        initialComments[q.id] = '';
+                    });
+                    setAnswers(initialAnswers);
+                    setComments(initialComments);
+                    setFormData({
+                        responseGuidID: id
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching survey:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchSurvey();
+    }, [surveyId, searchParams]);
+
+    const handleAnswerChange = (questionId, value) => {
+        setAnswers(prev => ({
+            ...prev,
+            [questionId]: value
+        }));
+    };
+
+    const handleCommentChange = (questionId, value) => {
+        setComments(prev => ({
+            ...prev,
+            [questionId]: value
+        }));
+    };
+
+    const handleMultiChoiceChange = (questionId, option) => {
+        setAnswers(prev => ({
+            ...prev,
+            [questionId]: prev[questionId].includes(option)
+                ? prev[questionId].filter(item => item !== option)
+                : [...prev[questionId], option]
+        }));
+    };
+    
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        // Transform answers object into array of SurveyResponseAnswer objects
+        const answersArray = Object.entries(answers).flatMap(([questionId, answer]) => {
+            if (Array.isArray(answer)) {
+                // Multiple choice: one SurveyResponseAnswer per selected option
+                return answer.map(option => ({
+                    surveyQuestionTemplateId: parseInt(questionId),
+                    freeTextAnswer: option,
+                    answeredAt: new Date().toISOString(),
+                    comment: comments[questionId]
+                }));
+            } else {
+                // Single answer: one SurveyResponseAnswer
+                return [{
+                    surveyQuestionTemplateId: parseInt(questionId),
+                    freeTextAnswer: answer.toString(),
+                    answeredAt: new Date().toISOString(),
+                    comment: comments[questionId]
+                }];
+            }
+        });
+
+        // Transform comments object into array
+        const commentsArray = Object.values(comments);
+
+        const submitData = {
+            Answers: answersArray,
+            EncodedGuidID: formData.responseGuidID,
+            StartDateTime: startDateRef.current
+        };
+
+        console.log('Survey submitted:', submitData);
+        
+        try{ 
+          const response = await axios.post(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/submit`, submitData);
+        } catch (error) {
+          console.error('Error submitting survey:', error);
+        }
+        finally{
+          navigate( { pathname: '/text-demo/thank-you' });
+        }
+    };
+
+    if (isLoading) {
+        return <LoadingSkeleton />;
+    }
+
+    if (!survey) {
+        return <div>Error loading survey</div>;
+    }
+
+    return (
+        <div className="survey-container">
+            <img src={`/media/TBT_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" /> 
+            <h1>{survey.title}</h1>
+            {mode !== 'results' ? (
+                <form onSubmit={handleSubmit}>
+                {survey.questions.map((question) => (
+                    <div key={question.id} className="question-block">
+                        <h2>{question.text}</h2>
+                        
+                        {question.questionTypeID === 3 && (
+                            <div className="checkbox-group">
+                                {question.answerOptions.map((option) => (
+                                    <label key={option.id} className="checkbox-label">
+                                        <input
+                                            type="checkbox"
+                                            checked={answers[question.id]?.includes(option.text)}
+                                            onChange={() => handleMultiChoiceChange(question.id, option.text)}
+                                        />
+                                        {option.text}
+                                    </label>
+                                ))}
+                            </div>
+                        )}
+
+                        {question.questionTypeID === 4 && (
+                            <textarea
+                                value={answers[question.id] || ''}
+                                onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                                placeholder="Enter your answer..."
+                            />
+                        )}
+
+                        {question.questionTypeID === 2 && (
+                            <div className="recommendation-buttons">
+                                <button
+                                    type="button"
+                                    className={`recommendation-button ${answers[question.id] === 'Yes' ? 'selected' : ''}`}
+                                    onClick={() => handleAnswerChange(question.id, 'Yes')}
+                                >
+                                    Yes
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`recommendation-button ${answers[question.id] === 'No' ? 'selected' : ''}`}
+                                    onClick={() => handleAnswerChange(question.id, 'No')}
+                                >
+                                    No
+                                </button>
+                            </div>
+                        )}
+
+                        {question.questionTypeID === 1 && (
+                            <div className="rating-container">
+                                {[...Array(10)].map((_, index) => (
+                                    <button
+                                        key={index}
+                                        type="button"
+                                        className={`rating-button ${answers[question.id] === (index + 1) ? 'selected' : ''}`}
+                                        onClick={() => handleAnswerChange(question.id, index + 1)}
+                                    >
+                                        {index + 1}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {question.questionTypeID !== 4 && ( <textarea
+                            placeholder="Additional comments..."
+                            value={comments[question.id] || ''}
+                            onChange={(e) => handleCommentChange(question.id, e.target.value)}
+                            className="comment-textarea"
+                        />)} 
+                        {/* only show for non-text questions */}
+                    </div>
+                ))}
+                
+                <button type="submit" className="submit-button">
+                    Submit Survey
+                </button>
+            </form>
+            ) : (
+                <h1>Results</h1>
+            )}
+            
+        </div>
+    );
 };
 
-export default Survey; 
+export default SurveyFinal;

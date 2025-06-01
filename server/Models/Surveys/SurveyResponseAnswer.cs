@@ -16,8 +16,8 @@ namespace server.Models.Surveys
         public SurveyQuestionTemplate? SurveyQuestionTemplate { get; set; }
 
         [ForeignKey("AnswerOptionTemplate")]
-        public int? AnswerOptionTemplateId { get; set; }
-        public AnswerOptionTemplate? AnswerOptionTemplate { get; set; }
+        public int AnswerOptionTemplateId { get; set; }
+        public AnswerOptionTemplate AnswerOptionTemplate { get; set; } = new();
 
         // Optional free text response (used for open-ended or fill-in-the-blank)
         public string? FreeTextAnswer { get; set; }
