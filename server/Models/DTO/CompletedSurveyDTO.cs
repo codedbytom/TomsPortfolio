@@ -1,0 +1,11 @@
+using server.Models.DTO.Survey;
+using server.Models.Surveys;
+
+namespace server.Models.DTO{
+    public class CompletedSurveyDTO
+    {
+        public int SurveyTemplateId { get; set; }
+        public string? Title { get; set; } // Optional
+        public List<SurveyQuestionDto> Questions { get; set; } = new();
+    }
+}
