@@ -126,7 +126,8 @@ namespace server.Controllers
                     {
                         Comment = a.Comment,
                         Id = a.Id,
-                        Text = a.AnswerOptionTemplate?.Text ?? string.Empty
+                        Text = a.AnswerOptionTemplate?.Text ?? string.Empty,
+                        FreeTextAnswer = a.FreeTextAnswer
                     }).ToList()
                 };
             }).ToList();
