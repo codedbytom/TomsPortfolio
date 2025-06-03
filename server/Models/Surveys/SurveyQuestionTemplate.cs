@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace server.Models
@@ -10,8 +11,7 @@ namespace server.Models
         public string Text { get; set; } = "";
         [ForeignKey("SurveyTemplate")]
         public int SurveyTemplateId { get; set; }
-        [JsonIgnore]
-        public SurveyTemplate? SurveyTemplate { get; set; }
+        public required SurveyTemplate SurveyTemplate { get; set; } 
         public bool IsRequired { get; set; }
         public int OrderInSurvey { get; set; }
         [ForeignKey("QuestionType")]

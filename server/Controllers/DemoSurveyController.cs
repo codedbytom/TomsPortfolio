@@ -5,9 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using server.data;
 using Vonage.Common;
 using server.Models.Surveys;
-using server.Models.DTO;
+using server.Models.DTO.Survey;
 using Vonage.Meetings.DeleteTheme;
 using Microsoft.Extensions.Options;
+using server.Models.DTO;
 
 namespace server.Controllers
 {
@@ -41,21 +42,16 @@ namespace server.Controllers
             try
             {
                 // Create survey responses
-                var surveyResponse = _context.SurveyResponses
+                var surveyResponse = await _context.SurveyResponses
                                         .Where(sr => sr.ResponseGuid == _guidEncoderService.DecodeBase64ToGuid(submission.EncodedGuidID ?? ""))
-                                        .FirstOrDefault();
+                                        .FirstOrDefaultAsync();
 
                 if (surveyResponse == null) return StatusCode(500, "Survey Response Doesn't Exist");
 
                 surveyResponse.CompletedAt = DateTime.UtcNow;
-                surveyResponse.Answers = submission.Answers;
+                if(submission.Answers != null) // Add the answers, if null, just submit a blank survey
+                    surveyResponse.Answers = _surveyService.MapSurveyRADTO(submission.Answers, surveyResponse.Id);
 
-                surveyResponse?.Answers?.ForEach(a =>
-                {
-                    a.SurveyResponseId = surveyResponse.Id;
-                }) ;
-
-                //Save the response
                 await _context.SaveChangesAsync();
 
                 return Ok(new { message = "Survey submitted successfully" });
@@ -105,18 +101,41 @@ namespace server.Controllers
 
             var surveyReponse = await _context.SurveyResponses
                                     .Include(sr => sr.Answers)
+                                    .ThenInclude(a => a.AnswerOptionTemplate)
+                                    .Include(sr => sr.SurveyTemplate)
+                                    .ThenInclude(a => a.Questions)
+                                    .ThenInclude(aot => aot.AnswerOptions)
                                     .Where(sr => sr.ResponseGuid == surveyResponseGuid)
                                     .FirstOrDefaultAsync();
 
-            if (surveyReponse == null || surveyReponse?.Contact == null || surveyReponse.Answers == null)
+            if (surveyReponse == null || surveyReponse.Answers == null)
                 return NotFound();
+
+            var questionGroups = surveyReponse.Answers
+            .GroupBy(a => a.SurveyQuestionTemplateId)
+            .ToList();
+    
+            var questions = questionGroups.Select(q =>{
+                var firstAnswer = q.First();
+                return new SurveyQuestionDto
+                {
+                    Id = firstAnswer.SurveyQuestionTemplateId,
+                    Text = firstAnswer.SurveyQuestionTemplate?.Text ?? string.Empty,
+                    QuestionTypeID = firstAnswer.SurveyQuestionTemplate?.QuestionTypeID ?? 0,
+                    AnswerOptions = q.Select(a => new SurveyAnswerDTO
+                    {
+                        Comment = a.Comment,
+                        Id = a.Id,
+                        Text = a.AnswerOptionTemplate?.Text ?? string.Empty
+                    }).ToList()
+                };
+            }).ToList();
             var completedSurveyDTO = new CompletedSurveyDTO
             {
                 SurveyTemplateId = 1,
                 Title = surveyReponse?.SurveyTemplate?.SurveyName ?? "Sample Survey",
-                SubmittedAnswers = surveyReponse?.Answers ?? []
+                Questions = questions
             };
-
             return Ok(completedSurveyDTO);
         }
 
@@ -141,7 +160,18 @@ namespace server.Controllers
             {
                 SurveyTemplateId = template.Id,
                 Title = template.SurveyName,
-                Questions = template.Questions
+                Questions = template.Questions.Select(q => new SurveyQuestionDto
+                {
+                    Id = q.Id,
+                    Text = q.Text,
+                    QuestionTypeID = q.QuestionTypeID,
+                    AnswerOptions = q.AnswerOptions.Select(a => new SurveyAnswerDTO
+                    {
+                        Id = a.Id,
+                        Text = a.Text,
+                        Value = a.Value
+                    }).ToList()
+                }).ToList()
             };
 
             return Ok(dto);
@@ -164,17 +194,12 @@ namespace server.Controllers
                 return StatusCode(500, new { error = "Failed to fetch survey questions", details = ex.Message });
             }
         }
-
-        private string GenerateFollowUpMessage(DemoSurveySubmission submission)
-        {
-            return string.Empty;
-        }
     }
 
     public class DemoSurveySubmission
     {
         public string? StartDateTime { get; set; }
         public string? EncodedGuidID { get; set; }
-        public List<SurveyResponseAnswer>? Answers { get; set; }
+        public List<SurveyAnswerDTO>? Answers { get; set; }
     }
 } 

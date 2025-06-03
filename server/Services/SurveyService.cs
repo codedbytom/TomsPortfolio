@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using server.Models;
 using server.data;
+using Vonage.ProactiveConnect.Lists;
+using server.Models.Surveys;
+using server.Models.DTO.Survey;
 
 namespace server.Services
 {
@@ -17,6 +20,19 @@ namespace server.Services
         {
             _context.SurveyResponses.Add(response);
             await _context.SaveChangesAsync();
+        }
+
+        public List<SurveyResponseAnswer> MapSurveyRADTO(List<SurveyAnswerDTO> surveyAnswerDTOs, int surveyResponseID)
+        {
+            return surveyAnswerDTOs.Select(a => new SurveyResponseAnswer
+            {
+                SurveyResponseId = surveyResponseID,
+                SurveyQuestionTemplateId = a.SurveyQuestionTemplateId,
+                AnswerOptionTemplateId = a.AnswerOptionTemplateId ?? null,
+                FreeTextAnswer = a.FreeTextAnswer,
+                Comment = a.Comment
+
+            }).ToList();
         }
 
         public async Task<List<SurveyResponse>> GetSurveyResponsesAsync(int surveyTemp)

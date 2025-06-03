@@ -16,7 +16,7 @@ const SurveyFinal = () => {
     const navigate = useNavigate(); // Import useNavigate
     const [survey, setSurvey] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const { surveyId } = useParams();
+    const  surveyId  = useParams();
     const [searchParams] = useSearchParams();
     const [answers, setAnswers] = useState({});
     const [comments, setComments] = useState({});
@@ -41,7 +41,7 @@ const SurveyFinal = () => {
         const fetchSurvey = async () => {
             try {
                 console.log('Fetching survey');
-                const id = surveyId || searchParams.get('id') || 'U5bXdq6KnEqyt2DO5grNUQ';
+                const id = surveyId.responseGuid || searchParams.get('id') || 'U5bXdq6KnEqyt2DO5grNUQ';
                 if(mode == 'results' && id){
                     const response = await axios.get(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/results/${id}`);
                     setSurvey(response.data);
@@ -101,11 +101,18 @@ const SurveyFinal = () => {
         
         // Transform answers object into array of SurveyResponseAnswer objects
         const answersArray = Object.entries(answers).flatMap(([questionId, answer]) => {
+            const question = survey.questions.find(q => q.id === parseInt(questionId));
+            const questionTypeID = question?.questionTypeID ?? null;
+            
+            if(questionTypeID == null){
+                questionTypeID = survey.questions?.[questionId][0].questionTypeID;
+            }
+
             if (Array.isArray(answer)) {
                 // Multiple choice: one SurveyResponseAnswer per selected option
                 return answer.map(option => ({
                     surveyQuestionTemplateId: parseInt(questionId),
-                    freeTextAnswer: option,
+                    AnswerOptionTemplateId: option,
                     answeredAt: new Date().toISOString(),
                     comment: comments[questionId]
                 }));
@@ -113,9 +120,10 @@ const SurveyFinal = () => {
                 // Single answer: one SurveyResponseAnswer
                 return [{
                     surveyQuestionTemplateId: parseInt(questionId),
-                    freeTextAnswer: answer.toString(),
+                    FreeTextAnswer: questionTypeID === 4 ? answer.toString() : null,
+                    AnswerOptionTemplateId: questionTypeID === 4 ? null : answer.toString(),
                     answeredAt: new Date().toISOString(),
-                    comment: comments[questionId]
+                    comment: questionTypeID === 4 ? "" : comments[questionId]
                 }];
             }
         });
@@ -165,8 +173,8 @@ const SurveyFinal = () => {
                                     <label key={option.id} className="checkbox-label">
                                         <input
                                             type="checkbox"
-                                            checked={answers[question.id]?.includes(option.text)}
-                                            onChange={() => handleMultiChoiceChange(question.id, option.text)}
+                                            checked={answers[question.id]?.includes(option.id)}
+                                            onChange={() => handleMultiChoiceChange(question.id, option.id)}
                                         />
                                         {option.text}
                                     </label>
@@ -183,34 +191,30 @@ const SurveyFinal = () => {
                         )}
 
                         {question.questionTypeID === 2 && (
+
                             <div className="recommendation-buttons">
-                                <button
+                                {question.answerOptions.map((answer) => (
+                                    <button
                                     type="button"
-                                    className={`recommendation-button ${answers[question.id] === 'Yes' ? 'selected' : ''}`}
-                                    onClick={() => handleAnswerChange(question.id, 'Yes')}
+                                    className={`recommendation-button ${answers[question.id] === answer.id ? 'selected' : ''}`}
+                                    onClick={() => handleAnswerChange(question.id,answer.id)}
                                 >
-                                    Yes
+                                    {answer.text}
                                 </button>
-                                <button
-                                    type="button"
-                                    className={`recommendation-button ${answers[question.id] === 'No' ? 'selected' : ''}`}
-                                    onClick={() => handleAnswerChange(question.id, 'No')}
-                                >
-                                    No
-                                </button>
+                                ))}
                             </div>
                         )}
 
                         {question.questionTypeID === 1 && (
                             <div className="rating-container">
-                                {[...Array(10)].map((_, index) => (
+                                {question.answerOptions.map((index) => (
                                     <button
-                                        key={index}
+                                        key={index.id}
                                         type="button"
-                                        className={`rating-button ${answers[question.id] === (index + 1) ? 'selected' : ''}`}
-                                        onClick={() => handleAnswerChange(question.id, index + 1)}
+                                        className={`rating-button ${answers[question.id] === (index.id) ? 'selected' : ''}`}
+                                        onClick={() => handleAnswerChange(question.id, index.id)}
                                     >
-                                        {index + 1}
+                                        {index.text}
                                     </button>
                                 ))}
                             </div>
@@ -231,9 +235,16 @@ const SurveyFinal = () => {
                 </button>
             </form>
             ) : (
-                <h1>Results</h1>
+                survey.questions.map((question) => (
+                    <div key={question.id}>
+                        <h2>{question.text}</h2>
+                        {question.answerOptions.map((answer) => (
+                            <h5 key={answer.id}>{answer.text}</h5>
+                        ))}
+                        {question.answerOptions[0].comment}
+                    </div>
+                ))
             )}
-            
         </div>
     );
 };

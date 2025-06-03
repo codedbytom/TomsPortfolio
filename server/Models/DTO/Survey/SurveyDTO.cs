@@ -1,8 +1,5 @@
-using server.Models.DTO.Survey;
-using server.Models.Surveys;
-
-namespace server.Models.DTO{
-    public class CompletedSurveyDTO
+namespace server.Models.DTO.Survey{
+    public class SurveyDto
     {
         public int SurveyTemplateId { get; set; }
         public string? Title { get; set; } // Optional

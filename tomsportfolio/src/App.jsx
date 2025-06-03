@@ -24,7 +24,7 @@ function App() {
         <Route path="/coding-nightmares" element={<CodingNightmares />} />
         <Route path="/text-demo/opt-in" element={<OptIn />} />
         <Route path="/text-demo/sms-preview" element={<SmsPreview />} />
-        <Route path="/text-demo/survey/:surveyId" element={<Survey />} />
+        <Route path="/text-demo/survey/:responseGuid" element={<Survey />} />
         <Route path="/text-demo/survey" element={<Survey />} />
         <Route path="/text-demo/survey/results/:responseGuid" element={<Survey mode="results" />} />
         <Route path="/text-demo/thank-you" element={<ThankYou />} />
