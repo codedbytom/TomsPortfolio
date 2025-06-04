@@ -78,11 +78,13 @@ namespace server.Controllers
 
             if (surveyReponse == null || messageTemplateText == null) return NotFound();
             var baseUrl = $"{_apiUrl}/text-demo/survey/results/{surveyResponseID}";
+            var content = messageTemplateText?.Replace("{url}", baseUrl) ?? "Thank you for participating";
+            content = content?.Replace("{Contact Name}", surveyReponse?.Contact?.Name) ?? "";
 
             var completionText = new Models.Message
             {
                 PhoneNumber = surveyReponse?.Contact?.PhoneNumber ?? "",
-                Content = messageTemplateText?.Replace("{url}", baseUrl) ?? "Thank you for participating",
+                Content = content,
                 ContactId = surveyReponse?.Contact?.Id,
                 MessageTypeID = (int)MessageTypeEnum.SurveyResults,
                 SurveyResponseId = surveyReponse?.Id,
@@ -126,7 +128,8 @@ namespace server.Controllers
                     {
                         Comment = a.Comment,
                         Id = a.Id,
-                        Text = a.AnswerOptionTemplate?.Text ?? string.Empty
+                        Text = a.AnswerOptionTemplate?.Text ?? string.Empty,
+                        FreeTextAnswer = a.FreeTextAnswer
                     }).ToList()
                 };
             }).ToList();

@@ -239,7 +239,11 @@ const SurveyFinal = () => {
                     <div key={question.id}>
                         <h2>{question.text}</h2>
                         {question.answerOptions.map((answer) => (
-                            <h5 key={answer.id}>{answer.text}</h5>
+                            (question.questionTypeID != 4 ?
+                                <h5 key={answer.id}>{answer.text}</h5>
+                            :
+                                <h5>{answer.freeTextAnswer}</h5>
+                            )
                         ))}
                         {question.answerOptions[0].comment}
                     </div>
