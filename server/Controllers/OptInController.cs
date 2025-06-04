@@ -199,6 +199,8 @@ namespace server.Controllers
 
                 var fullUrl = $"{_apiUrl}{surveyMessage.Url}"; // Use the service
                 surveyMessage.Content = surveyMessage.Content.Replace("{url}", fullUrl);
+                surveyMessage.MessageTypeID = (int)MessageTypeEnum.SurveyLink;
+                
                 try
                 {
                     // Send the message

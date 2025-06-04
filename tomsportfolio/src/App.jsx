@@ -27,7 +27,7 @@ function App() {
         <Route path="/text-demo/survey/:responseGuid" element={<Survey />} />
         <Route path="/text-demo/survey" element={<Survey />} />
         <Route path="/text-demo/survey/results/:responseGuid" element={<Survey mode="results" />} />
-        <Route path="/text-demo/thank-you" element={<ThankYou />} />
+        <Route path="/text-demo/thank-you/:responseGuid" element={<ThankYou />} />
         <Route path="/legal/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/admin/test-page" element={<TestPage />} />

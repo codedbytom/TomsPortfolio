@@ -1,8 +1,25 @@
 import {BaseLayout} from '../../components/Layout';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, Link, useParams} from 'react-router-dom';
 
-export default function ThankYou() {
+function ThankYou() {
+    const { responseGuid } = useParams();
+
+    useEffect(() => {
+        const sendResultsText = async() => {
+            try{
+                const response = await axios.get(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/Completed/${responseGuid}`);
+                console.log("Endpoint Hit");
+            }
+            catch(error)
+            {
+                console.log('Error hitting endpoint', error);
+            }
+        }
+        sendResultsText();
+    }, [responseGuid]);
+
     return (
         <BaseLayout>
         <img src={`/media/TBT_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" /> 
@@ -12,3 +29,5 @@ export default function ThankYou() {
         </BaseLayout>
     );
 }
+
+export default ThankYou;
