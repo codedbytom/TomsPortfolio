@@ -102,10 +102,11 @@ namespace server.Controllers
             Guid surveyResponseGuid = _guidEncoderService.DecodeBase64ToGuid(surveyResponseID);
 
             var surveyReponse = await _context.SurveyResponses
+                                    .Include(sr => sr.Contact)
                                     .Include(sr => sr.Answers)
                                     .ThenInclude(a => a.AnswerOptionTemplate)
                                     .Include(sr => sr.SurveyTemplate)
-                                    .ThenInclude(a => a.Questions)
+                                    .ThenInclude(st => st.Questions)
                                     .ThenInclude(aot => aot.AnswerOptions)
                                     .Where(sr => sr.ResponseGuid == surveyResponseGuid)
                                     .FirstOrDefaultAsync();
@@ -135,8 +136,8 @@ namespace server.Controllers
             }).ToList();
             var completedSurveyDTO = new CompletedSurveyDTO
             {
-                SurveyTemplateId = 1,
-                Title = surveyReponse?.SurveyTemplate?.SurveyName ?? "Sample Survey",
+                SurveyTemplateId = surveyReponse.SurveyTemplateId,
+                Title = $"Feedback From: {surveyReponse?.Contact?.Name}" ?? "Sample Survey",
                 Questions = questions
             };
             return Ok(completedSurveyDTO);

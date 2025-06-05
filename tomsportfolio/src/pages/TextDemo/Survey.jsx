@@ -235,20 +235,39 @@ const SurveyFinal = () => {
                 </button>
             </form>
             ) : (
-                survey.questions.map((question) => (
-                    <div key={question.id}>
-                        <h2>{question.text}</h2>
-                        {question.answerOptions.map((answer) => (
-                            (question.questionTypeID != 4 ?
-                                <h5 key={answer.id}>{answer.text}</h5>
-                            :
-                                <h5>{answer.freeTextAnswer}</h5>
-                            )
-                        ))}
-                        {question.answerOptions[0].comment}
-                    </div>
-                ))
+                <table className="table table-striped table-bordered table-hover table-sm">
+                <thead>
+                    <tr className="bg-gray-100 text-left">
+                        <th className="p-3 font-semibold">Question</th>
+                        <th className="p-3 font-semibold">Answer / Comment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {survey.questions.map((question, idx) => (
+                    <tr key={idx}>
+                        <td className="p-3 align-top">{question.text}</td>
+                        <td className="p-3 align-top">
+                            {question.answerOptions.map((answer, i) => (
+                                <div key={i} className="mb-2">
+                                <div><strong>{question.questionTypeID !== 4 ? answer.text : answer.freeTextAnswer}</strong></div>
+                                    {answer?.comment && question.questionTypeID !== 3  && (
+                                    <div className="text-gray-500 italic">{answer.comment}</div>
+                                    )}
+                                </div>
+                                
+                            ))}
+                            {question.questionTypeID == 3 && (
+                                <div className="text-gray-500 italic">{question.answerOptions[0]?.comment}</div>
+                            )}
+                        </td>
+                    </tr>
+                ))}
+                </tbody>
+                </table>
             )}
+            <div className="text-center mt-4">
+                <a href="/" class="btn btn-primary">Back to Home</a>
+            </div>
         </div>
     );
 };
