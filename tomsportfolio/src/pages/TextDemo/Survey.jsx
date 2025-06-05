@@ -235,6 +235,7 @@ const SurveyFinal = () => {
                 </button>
             </form>
             ) : (
+                <div>
                 <table className="table table-striped table-bordered table-hover table-sm">
                 <thead>
                     <tr className="bg-gray-100 text-left">
@@ -264,10 +265,11 @@ const SurveyFinal = () => {
                 ))}
                 </tbody>
                 </table>
+                    <div className="text-center mt-4">
+                        <a href="/" class="btn btn-primary">Back to Home</a>
+                    </div>
+                </div>
             )}
-            <div className="text-center mt-4">
-                <a href="/" class="btn btn-primary">Back to Home</a>
-            </div>
         </div>
     );
 };
