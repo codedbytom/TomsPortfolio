@@ -145,7 +145,7 @@ const SurveyFinal = () => {
           console.error('Error submitting survey:', error);
         }
         finally{
-          navigate( { pathname: '/text-demo/thank-you' });
+          navigate( { pathname: `/text-demo/thank-you/${formData.responseGuidID}` });
         }
     };
 
