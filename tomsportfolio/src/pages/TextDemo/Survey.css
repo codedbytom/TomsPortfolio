@@ -1,8 +1,8 @@
 .survey-container {
-  width: 90%;
+  width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  padding: 2rem;
+  /* padding: 2rem; */
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -225,4 +225,19 @@ textarea.large-textarea {
 
 .send-btn:disabled {
   cursor: not-allowed;
+}
+/* pulse animation for the send button on the preview page*/
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+.send-btn {
+  animation: pulse 1.5s infinite;
+}
+
+@media screen and (max-width: 480px) {
+  #root.survey-mode {
+    padding: 0 !important;
+  }
 }

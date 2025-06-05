@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using server.data;
 
@@ -11,9 +12,11 @@ using server.data;
 namespace server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250528174328_SurveyResponseMessages")]
+    partial class SurveyResponseMessages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,7 +95,7 @@ namespace server.Migrations
                         {
                             Id = 1,
                             IsActive = true,
-                            LastActiveTime = new DateTime(2025, 6, 2, 13, 59, 7, 995, DateTimeKind.Utc).AddTicks(5470),
+                            LastActiveTime = new DateTime(2025, 5, 28, 17, 43, 28, 105, DateTimeKind.Utc).AddTicks(9820),
                             Name = "Demo User",
                             OptInTime = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             OptOutTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),

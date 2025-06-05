@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using server.data;
 using Vonage.Common;
 using server.Models.Surveys;
+using server.Models.DTO.Survey;
+using Vonage.Meetings.DeleteTheme;
+using Microsoft.Extensions.Options;
 using server.Models.DTO;
 
 namespace server.Controllers
@@ -17,13 +20,20 @@ namespace server.Controllers
         private readonly IMessagingService _messageService;
         private readonly AppDbContext _context;
         private readonly IGuidEncoderService _guidEncoderService;
+        private readonly string _apiUrl;
 
-        public DemoSurveyController(ISurveyService surveyService, IMessagingService messageService, AppDbContext context, IGuidEncoderService guidEncoderService)
+        public DemoSurveyController(
+            ISurveyService surveyService,
+            IMessagingService messageService,
+            AppDbContext context,
+            IGuidEncoderService guidEncoderService,
+            IOptions<AppSettings> options)
         {
             _surveyService = surveyService;
             _messageService = messageService;
             _context = context;
             _guidEncoderService = guidEncoderService;
+            _apiUrl = options.Value.PublicApiUrl ?? "";
         }
 
         [HttpPost("submit")]
@@ -31,60 +41,18 @@ namespace server.Controllers
         {
             try
             {
-                // Create survey response
-                var surveyResponse = new SurveyResponse
-                {
-                    SurveyTemplateId = 1, // Fixed ID for demo survey
-                    ContactId = submission.ContactId,
-                    StartedAt = DateTime.UtcNow,
-                    CompletedAt = DateTime.UtcNow,
-                    Answers = new List<SurveyResponseAnswer>
-                    {
-                        new SurveyResponseAnswer
-                        {
-                            SurveyQuestionTemplateId = 2,
-                            FreeTextAnswer = submission.Rating.ToString(),
-                            AnsweredAt = DateTime.UtcNow
-                        },
-                        new SurveyResponseAnswer
-                        {
-                            SurveyQuestionTemplateId = 3,
-                            FreeTextAnswer = submission.Recommendation ?? "",
-                            AnsweredAt = DateTime.UtcNow
-                        },
-                        new SurveyResponseAnswer
-                        {
-                            SurveyQuestionTemplateId = 4,
-                            FreeTextAnswer = string.Join(",", submission.Likes),
-                            AnsweredAt = DateTime.UtcNow
-                        },
-                        new SurveyResponseAnswer
-                        {
-                            SurveyQuestionTemplateId = 5,
-                            FreeTextAnswer = submission.Comments.Suggestions,
-                            AnsweredAt = DateTime.UtcNow
-                        }
-                    }
-                };
-                foreach (var a in surveyResponse.Answers)
-                {
-                    Console.WriteLine($"Answer QID: {a.SurveyQuestionTemplateId}");
-                }
-                // Save the response
-                await _surveyService.SaveSurveyResponseAsync(surveyResponse);
+                // Create survey responses
+                var surveyResponse = await _context.SurveyResponses
+                                        .Where(sr => sr.ResponseGuid == _guidEncoderService.DecodeBase64ToGuid(submission.EncodedGuidID ?? ""))
+                                        .FirstOrDefaultAsync();
 
-                // Generate and send follow-up message
-                var followUpMessage = GenerateFollowUpMessage(submission);
-                if (submission.ContactId != 0)
-                {
-                    var contact = submission.ContactId;
-                    await _messageService.SendMessageAsync(new server.Models.Message
-                    {
-                        ContactId = contact,
-                        Content = followUpMessage,
-                        SentAt = DateTime.UtcNow
-                    });
-                }
+                if (surveyResponse == null) return StatusCode(500, "Survey Response Doesn't Exist");
+
+                surveyResponse.CompletedAt = DateTime.UtcNow;
+                if(submission.Answers != null) // Add the answers, if null, just submit a blank survey
+                    surveyResponse.Answers = _surveyService.MapSurveyRADTO(submission.Answers, surveyResponse.Id);
+
+                await _context.SaveChangesAsync();
 
                 return Ok(new { message = "Survey submitted successfully" });
             }
@@ -92,6 +60,87 @@ namespace server.Controllers
             {
                 return StatusCode(500, new { error = "Failed to submit survey", details = ex.Message });
             }
+        }
+
+        [HttpGet("Completed/{surveyResponseID}")]
+        public async Task<IActionResult> SendCompletionText(string surveyResponseID)
+        {
+            Guid surveyResponseGuid = _guidEncoderService.DecodeBase64ToGuid(surveyResponseID);
+            var surveyReponse = await _context.SurveyResponses
+                                        .Include(sr => sr.Contact)
+                                        .Where(sr => sr.ResponseGuid == surveyResponseGuid)
+                                        .FirstOrDefaultAsync();
+
+            var messageTemplateText = await _context.MessageTemplates
+                                        .Where(mt => mt.MessageTypeId == (int)MessageTypeEnum.SurveyResults)
+                                        .Select(mt => mt.TemplateText)
+                                        .FirstOrDefaultAsync();
+
+            if (surveyReponse == null || messageTemplateText == null) return NotFound();
+            var baseUrl = $"{_apiUrl}/text-demo/survey/results/{surveyResponseID}";
+            var content = messageTemplateText?.Replace("{url}", baseUrl) ?? "Thank you for participating";
+            content = content?.Replace("{Contact Name}", surveyReponse?.Contact?.Name) ?? "";
+
+            var completionText = new Models.Message
+            {
+                PhoneNumber = surveyReponse?.Contact?.PhoneNumber ?? "",
+                Content = content,
+                ContactId = surveyReponse?.Contact?.Id,
+                MessageTypeID = (int)MessageTypeEnum.SurveyResults,
+                SurveyResponseId = surveyReponse?.Id,
+                SentAt = DateTime.UtcNow
+            };
+
+            await _messageService.SendMessageAsync(completionText);
+
+            return Ok(new { message = "Thank you for submitting the survey" });
+        }
+
+        [HttpGet("results/{surveyResponseID}")]
+        public async Task<IActionResult> GetCompletedResults(string surveyResponseID)
+        {
+            Guid surveyResponseGuid = _guidEncoderService.DecodeBase64ToGuid(surveyResponseID);
+
+            var surveyReponse = await _context.SurveyResponses
+                                    .Include(sr => sr.Contact)
+                                    .Include(sr => sr.Answers)
+                                    .ThenInclude(a => a.AnswerOptionTemplate)
+                                    .Include(sr => sr.SurveyTemplate)
+                                    .ThenInclude(st => st.Questions)
+                                    .ThenInclude(aot => aot.AnswerOptions)
+                                    .Where(sr => sr.ResponseGuid == surveyResponseGuid)
+                                    .FirstOrDefaultAsync();
+
+            if (surveyReponse == null || surveyReponse.Answers == null)
+                return NotFound();
+
+            var questionGroups = surveyReponse.Answers
+            .GroupBy(a => a.SurveyQuestionTemplateId)
+            .ToList();
+    
+            var questions = questionGroups.Select(q =>{
+                var firstAnswer = q.First();
+                return new SurveyQuestionDto
+                {
+                    Id = firstAnswer.SurveyQuestionTemplateId,
+                    Text = firstAnswer.SurveyQuestionTemplate?.Text ?? string.Empty,
+                    QuestionTypeID = firstAnswer.SurveyQuestionTemplate?.QuestionTypeID ?? 0,
+                    AnswerOptions = q.Select(a => new SurveyAnswerDTO
+                    {
+                        Comment = a.Comment,
+                        Id = a.Id,
+                        Text = a.AnswerOptionTemplate?.Text ?? string.Empty,
+                        FreeTextAnswer = a.FreeTextAnswer
+                    }).ToList()
+                };
+            }).ToList();
+            var completedSurveyDTO = new CompletedSurveyDTO
+            {
+                SurveyTemplateId = surveyReponse.SurveyTemplateId,
+                Title = $"Feedback From: {surveyReponse?.Contact?.Name}" ?? "Sample Survey",
+                Questions = questions
+            };
+            return Ok(completedSurveyDTO);
         }
 
         [HttpGet("{surveyResponseID}")]
@@ -115,7 +164,18 @@ namespace server.Controllers
             {
                 SurveyTemplateId = template.Id,
                 Title = template.SurveyName,
-                Questions = template.Questions
+                Questions = template.Questions.Select(q => new SurveyQuestionDto
+                {
+                    Id = q.Id,
+                    Text = q.Text,
+                    QuestionTypeID = q.QuestionTypeID,
+                    AnswerOptions = q.AnswerOptions.Select(a => new SurveyAnswerDTO
+                    {
+                        Id = a.Id,
+                        Text = a.Text,
+                        Value = a.Value
+                    }).ToList()
+                }).ToList()
             };
 
             return Ok(dto);
@@ -138,48 +198,12 @@ namespace server.Controllers
                 return StatusCode(500, new { error = "Failed to fetch survey questions", details = ex.Message });
             }
         }
-
-        private string GenerateFollowUpMessage(DemoSurveySubmission submission)
-        {
-            var message = $"Thank you for your feedback! You rated our demo a {submission.Rating}/10";
-            
-            if (submission.Recommendation == "Yes")
-            {
-                message += " and would recommend it to others.";
-            }
-            else
-            {
-                message += " but wouldn't recommend it yet.";
-            }
-
-            if (submission.Likes.Any())
-            {
-                message += $"\n\nYou particularly liked: {string.Join(", ", submission.Likes)}.";
-            }
-
-            if (!string.IsNullOrEmpty(submission.Comments.Suggestions))
-            {
-                message += "\n\nWe appreciate your additional feedback and will take it into consideration!";
-            }
-
-            return message;
-        }
     }
 
     public class DemoSurveySubmission
     {
-        public int ContactId { get; set; }
-        public int Rating { get; set; }
-        public string? Recommendation { get; set; }
-        public List<string> Likes { get; set; } = new();
-        public SurveyComments Comments { get; set; } = new();
-    }
-
-    public class SurveyComments
-    {
-        public string Rating { get; set; } = "";
-        public string Recommendation { get; set; } = "";
-        public string Likes { get; set; } = "";
-        public string Suggestions { get; set; } = "";
+        public string? StartDateTime { get; set; }
+        public string? EncodedGuidID { get; set; }
+        public List<SurveyAnswerDTO>? Answers { get; set; }
     }
 } 

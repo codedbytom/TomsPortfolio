@@ -33,18 +33,20 @@ namespace server.Services
             return messageCount;
         }
 
-        private async Task SaveMessage(Models.Message message)
-        {
-            var result = await _context.AddAsync(message);
-        }
-
         public async Task<bool> IsContactOptedIn(string phoneNumber)
         {
             var correctedPhoneNumber = "+" + phoneNumber;
             return await _context.Contacts
-                    .AnyAsync(p => p.PhoneNumber == correctedPhoneNumber 
+                    .AnyAsync(p => p.PhoneNumber == correctedPhoneNumber
                     && p.OptOutTime == DateTime.MinValue
                     && p.IsActive);
+        }
+
+        private async Task<bool> HasMessageBeenSentBefore(int messageTypeID, int responseID)
+        {
+            return await _context.Messages
+                            .Where(m => m.SurveyResponseId == responseID && messageTypeID == m.MessageTypeID)
+                            .AnyAsync();
         }
 
         public async Task SendMessageAsync(Models.Message message)
@@ -52,10 +54,16 @@ namespace server.Services
             try
             {
                 //Make sure that Sms is currently enabled to send
-                if(await _context.SmsStatuses.AnyAsync(s => s.IsSmsActive == false)){
+                if (await _context.SmsStatuses.AnyAsync(s => s.IsSmsActive == false))
+                {
                     throw new InvalidOperationException("SMS functionality is currently disabled.");
                 }
 
+                if (await HasMessageBeenSentBefore(messageTypeID: message.MessageTypeID ?? 0, message.SurveyResponseId ?? 0))
+                {
+                    throw new InvalidOperationException("SMS has already been sent out for this survey and message type.");
+                }
+                
                 // Ensure sender number is in E.164 format
                 var fromNumber = _fromNumber;
                 if (!fromNumber.StartsWith("+"))
@@ -80,7 +88,7 @@ namespace server.Services
                 _logger.LogDebug($"Request details: From={request.From}, To={request.To}, Type={request.Type}, ClientRef={request.ClientRef}");
 
                 var response = await _VonageClient.SmsClient.SendAnSmsAsync(request);
-                
+
                 _logger.LogDebug($"=== Vonage API Response ===");
                 _logger.LogDebug($"Status: {response.Messages[0].Status}");
                 _logger.LogDebug($"MessageId: {response.Messages[0].MessageId}");
@@ -103,7 +111,7 @@ namespace server.Services
 
                 await _context.AddAsync(message);
                 await _context.SaveChangesAsync();
-                
+
                 _logger.LogInformation($"Message sent successfully to {message.PhoneNumber}. " +
                                      $"MessageId: {response.Messages[0].MessageId}, " +
                                      $"Network: {response.Messages[0].Network}, " +

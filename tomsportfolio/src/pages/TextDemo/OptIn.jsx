@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import {BaseLayout } from '../../components/Layout';
-import { useTheme } from '../../context/ThemeContext';
 
 const SmsOptIn = ({ workOrderId }) => {
   const [formData, setFormData] = useState({
@@ -13,8 +12,6 @@ const SmsOptIn = ({ workOrderId }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConsenting, setIsConsenting] = useState(false);
   const navigate = useNavigate(); // Import useNavigate
-  const { theme, toggleTheme } = useTheme();
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -34,7 +31,7 @@ const SmsOptIn = ({ workOrderId }) => {
     };
     pingServer();
   }, []);
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Validate phone number length
@@ -72,16 +69,7 @@ const SmsOptIn = ({ workOrderId }) => {
 
   return (
     <BaseLayout>
-      <div className="position-relative">
-        <button 
-          onClick={toggleTheme}
-          className="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 mt-2 me-2"
-          style={{ zIndex: 1000 }}
-        >
-          {theme === 'light' ? '🌙' : '☀️'}
-        </button>
-        <img src={`/media/TBT_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" />
-      </div>
+      <img src={`/media/TBT_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" />
       <div id="optInBody" className="container mt-4">
         <h3 className="text-center mb-4">Text Message Demo</h3>
         <div className="card mb-4">
@@ -144,7 +132,7 @@ const SmsOptIn = ({ workOrderId }) => {
             <label htmlFor="optIn" className="custom-checkbox-label">
               <span className="checkbox-custom"></span>
               <span className="checkbox-text">
-                I agree to receive text message surveys and alerts from Tom Built This.
+                I agree to receive text message surveys and alerts from Tom Built It.
               </span>
             </label>
           </div>
@@ -160,8 +148,8 @@ const SmsOptIn = ({ workOrderId }) => {
           </div>
         </form>
         <div className="card text-center mt-4">
-          <div className="card-footer">
-          Tom Built This text message surveys. Message and data rates may apply. Message frequency varies. Text HELP for help. Text STOP to opt-out.  View our <Link to="/legal/terms-and-conditions">Terms & Conditions</Link> and <Link to="/legal/privacy-policy" className="text-primary">Privacy Policy</Link>.
+          <div className="card-footer text-muted">
+          Tom Built It text message surveys. Message and data rates may apply. Message frequency varies. Text HELP for help. Text STOP to opt-out.  View our <Link to="/legal/terms-and-conditions" className="text-primary">Terms & Conditions</Link> and <Link to="/legal/privacy-policy" className="text-primary">Privacy Policy</Link>.
           </div>
         </div>
       </div>

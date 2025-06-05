@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using server.data;
 
@@ -11,9 +12,11 @@ using server.data;
 namespace server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250525161324_CommentToResponseAnswer")]
+    partial class CommentToResponseAnswer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,7 +95,7 @@ namespace server.Migrations
                         {
                             Id = 1,
                             IsActive = true,
-                            LastActiveTime = new DateTime(2025, 6, 2, 13, 59, 7, 995, DateTimeKind.Utc).AddTicks(5470),
+                            LastActiveTime = new DateTime(2025, 5, 25, 16, 13, 24, 712, DateTimeKind.Utc).AddTicks(1730),
                             Name = "Demo User",
                             OptInTime = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             OptOutTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -131,9 +134,6 @@ namespace server.Migrations
                     b.Property<DateTime>("SentAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("SurveyResponseId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
@@ -145,8 +145,6 @@ namespace server.Migrations
                     b.HasIndex("ContactId");
 
                     b.HasIndex("MessageTypeID");
-
-                    b.HasIndex("SurveyResponseId");
 
                     b.ToTable("Messages");
                 });
@@ -338,9 +336,6 @@ namespace server.Migrations
                     b.Property<int>("ContactId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDateTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<Guid>("ResponseGuid")
                         .HasColumnType("uniqueidentifier");
 
@@ -449,15 +444,9 @@ namespace server.Migrations
                         .WithMany()
                         .HasForeignKey("MessageTypeID");
 
-                    b.HasOne("server.Models.SurveyResponse", "SurveyResponse")
-                        .WithMany()
-                        .HasForeignKey("SurveyResponseId");
-
                     b.Navigation("Contact");
 
                     b.Navigation("MessageType");
-
-                    b.Navigation("SurveyResponse");
                 });
 
             modelBuilder.Entity("server.Models.MessageTemplate", b =>
@@ -492,7 +481,7 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Models.SurveyResponse", b =>
                 {
-                    b.HasOne("server.Models.Contact", "Contact")
+                    b.HasOne("server.Models.Contact", null)
                         .WithMany("Surveys")
                         .HasForeignKey("ContactId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -503,8 +492,6 @@ namespace server.Migrations
                         .HasForeignKey("SurveyTemplateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Contact");
 
                     b.Navigation("SurveyTemplate");
                 });
