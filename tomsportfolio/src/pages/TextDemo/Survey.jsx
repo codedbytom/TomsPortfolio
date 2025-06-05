@@ -30,6 +30,17 @@ const SurveyFinal = () => {
         responseGuidID: '00000000-0000-0000-0000-000000000000'
     });
     
+    
+    const [column1, setItems] = useState([]);
+    const [column2, setItems2] = useState([]);
+
+    const addItemToColumn1 = (newItem) => {
+        setItems(prevItems => [...prevItems, newItem]);
+    }
+
+    const addItemToColumn2 = (newItem) => {
+        setItems2(prevItems => [...prevItems, newItem]);
+    }
     // Do this to remove the spacing on the root just for the survey page for mobile
     useEffect(() => {
     const root = document.getElementById('root');
@@ -53,6 +64,17 @@ const SurveyFinal = () => {
                     // Initialize answers and comments state based on questions
                     const initialAnswers = {};
                     const initialComments = {};
+
+                    var question = response.data.questions.find(q => q.questionTypeID === 3);
+                    
+                    question.answerOptions.forEach((answer, idx) => {
+                        if(idx % 2 === 0){
+                            addItemToColumn1(answer);
+                        }else{
+                            addItemToColumn2(answer);
+                        }
+                    });
+
                     response.data.questions.forEach(q => {
                         initialAnswers[q.id] = q.questionTypeID === 3 ? [] : '';
                         initialComments[q.id] = '';
@@ -95,7 +117,10 @@ const SurveyFinal = () => {
                 : [...prev[questionId], option]
         }));
     };
-    
+
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         
@@ -169,8 +194,11 @@ const SurveyFinal = () => {
                         
                         {question.questionTypeID === 3 && (
                             <div className="checkbox-group">
-                                {question.answerOptions.map((option) => (
-                                    <label key={option.id} className="checkbox-label">
+                                <div className="row">
+                                <div className="col-md-6">
+                                    { column1.map((option, i) => 
+                                        <div class="form-check">
+                                            <label key={option.id} className="checkbox-label">
                                         <input
                                             type="checkbox"
                                             checked={answers[question.id]?.includes(option.id)}
@@ -178,7 +206,24 @@ const SurveyFinal = () => {
                                         />
                                         {option.text}
                                     </label>
-                                ))}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="col-md-6">
+                                    { column2.map((option, i) => 
+                                        <div class="form-check">
+                                            <label key={option.id} className="checkbox-label">
+                                        <input
+                                            type="checkbox"
+                                            checked={answers[question.id]?.includes(option.id)}
+                                            onChange={() => handleMultiChoiceChange(question.id, option.id)}
+                                        />
+                                        {option.text}
+                                    </label>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                             </div>
                         )}
 
