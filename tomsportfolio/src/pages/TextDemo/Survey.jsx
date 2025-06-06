@@ -190,7 +190,7 @@ const SurveyFinal = () => {
                 <form onSubmit={handleSubmit}>
                 {survey.questions.map((question) => (
                     <div key={question.id} className="question-block">
-                        <h2>{question.text}</h2>
+                        <h2 className="question-text">{question.text}</h2>
                         
                         {question.questionTypeID === 3 && (
                             <div className="checkbox-group">
@@ -232,6 +232,7 @@ const SurveyFinal = () => {
                                 value={answers[question.id] || ''}
                                 onChange={(e) => handleAnswerChange(question.id, e.target.value)}
                                 placeholder="Enter your answer..."
+                                className="survey-text-area"
                             />
                         )}
 
@@ -281,18 +282,18 @@ const SurveyFinal = () => {
             </form>
             ) : (
                 <div>
-                <table className="table table-striped table-bordered table-hover table-sm">
+                <table id="resultsTable" className="table table-striped table-bordered table-hover table-sm">
                 <thead>
                     <tr className="bg-gray-100 text-left">
-                        <th className="p-3 font-semibold">Question</th>
-                        <th className="p-3 font-semibold">Answer / Comment</th>
+                        <th className="p-3 font-semibold results-th">Question</th>
+                        <th className="p-3 font-semibold results-th">Answer / Comment</th>
                     </tr>
                 </thead>
                 <tbody>
                 {survey.questions.map((question, idx) => (
                     <tr key={idx}>
-                        <td className="p-3 align-top">{question.text}</td>
-                        <td className="p-3 align-top">
+                        <td className="p-3 align-top results-td">{question.text}</td>
+                        <td className="p-3 align-top results-td">
                             {question.answerOptions.map((answer, i) => (
                                 <div key={i} className="mb-2">
                                 <div><strong>{question.questionTypeID !== 4 ? answer.text : answer.freeTextAnswer}</strong></div>

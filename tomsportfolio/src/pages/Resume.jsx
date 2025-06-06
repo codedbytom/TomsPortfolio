@@ -12,6 +12,7 @@ export default function Resume() {
                 className="btn btn-primary mt-3"
                 target="_blank"
                 rel="noopener noreferrer"
+                id="downloadResume"
             >
                 📄 Download Resume
             </a>

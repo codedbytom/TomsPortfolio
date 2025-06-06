@@ -14,11 +14,13 @@ import TestPage from './pages/Admin/TestPage';
 import KillSms from './pages/Admin/KillSms';
 import Survey from './pages/TextDemo/Survey';
 import ThankYou from './pages/TextDemo/ThankYou';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
 <ThemeProvider>
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/resume" element={<Resume />} />

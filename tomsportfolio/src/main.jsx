@@ -5,7 +5,8 @@ import App from './App.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css'; //custom styles
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { ThemeProvider } from './context/ThemeContext.jsx';
 
 createRoot(document.getElementById('root')).render(
-    <App />
+        <App />
 )

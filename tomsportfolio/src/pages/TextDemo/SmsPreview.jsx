@@ -122,7 +122,7 @@ export default function TextPreview() {
           SMS is currently disabled. Contact Tom to enable it.
         </div>
       )}
-      <div className="text-message-container bg-white rounded-xl p-4 shadow-md max-w-md mx-auto">
+      <div className="text-message-container rounded-xl p-4 shadow-md max-w-md mx-auto">
         {/* Header */}
         <div className="header-content">
           <img 

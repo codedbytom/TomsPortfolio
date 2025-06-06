@@ -27,6 +27,7 @@
 
 /* Apply theme variables to elements */
 body {
+  background: var(--background-primary)!important ;
   margin: 0;
   padding: 0;
   background-color: var(--background-primary);
@@ -142,6 +143,69 @@ li {
 /* Add smooth transitions for theme changes */
 * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.card-header{
+  color: var(--text-primary) !important;
+}
+
+.card-footer.text-muted{
+  color: var(--text-primary) !important;
+}
+
+.text-message-container{
+  background-color: var(--background-primary) !important;
+  background: var(--background-primary) !important; /* or whatever your solid background is */
+  background-image: none !important;
+}
+
+.system-message {
+  margin-left: 0 !important;
+}
+
+.question-block{
+  background-color: var(--background-primary) !important;
+}
+
+.question-text{
+  color: var(--text-primary) !important;
+}
+
+.survey-container{
+  color: var(--text-color) !important;
+  background-color: var(--background-primary) !important;
+}
+
+.comment-textarea{
+  background-color: var(--background-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.checkbox-label{
+  color: var(--text-primary) !important;
+}
+
+.survey-text-area{
+  background-color: var(--background-primary) !important;
+  color: var(--text-color) !important;
+}
+
+#resultsTable{
+  color: var(--background-primary) !important;
+}
+
+.results-td{
+  background-color: var(--background-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.results-th{
+  background-color: var(--background-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+#downloadResume{
+  color: white !important;
 }
 
 button a,
