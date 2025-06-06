@@ -1,8 +1,11 @@
 // Create a BaseLayout (no navigation) and MainLayout (with navigation)
 import Navbar from './Navbar';
-
+import { ThemeToggle } from './ThemeToggle';
 const BaseLayout = ({ children }) => (
   <div className="theme-wrapper">
+    <div className="me-2">
+      <ThemeToggle />
+    </div>
     <div className="container">
       {children}
     </div>

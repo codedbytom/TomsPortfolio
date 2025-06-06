@@ -4,6 +4,7 @@ import {BaseLayout} from '../../components/Layout';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './Survey.css';
+import { ThemeToggle } from '../../components/ThemeToggle';
 
 export default function TextPreview() {
   const location = useLocation();
@@ -130,6 +131,9 @@ export default function TextPreview() {
             alt="Contact" 
             className="header-logo"
           />
+          <div className="me-2">
+              <ThemeToggle />
+          </div>
           <span className="contact-name">Tom Evanko</span>
         </div>
         <AnimatePresence>

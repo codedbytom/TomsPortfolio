@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useLocation } from 'react-router-dom';
 import { useNavigate, Link } from 'react-router-dom';
+import { ThemeToggle } from '../../components/ThemeToggle';
 import './Survey.css';
 import axios from 'axios';
 
@@ -184,6 +185,9 @@ const SurveyFinal = () => {
 
     return (
         <div className="survey-container">
+            <div className="me-2">
+                <ThemeToggle />
+            </div>
             <img src={`/media/TBT_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" /> 
             <h1>{survey.title}</h1>
             {mode !== 'results' ? (
@@ -191,7 +195,6 @@ const SurveyFinal = () => {
                 {survey.questions.map((question) => (
                     <div key={question.id} className="question-block">
                         <h2 className="question-text">{question.text}</h2>
-                        
                         {question.questionTypeID === 3 && (
                             <div className="checkbox-group">
                                 <div className="row">
