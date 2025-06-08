@@ -127,7 +127,7 @@ export default function TextPreview() {
         {/* Header */}
         <div className="header-content">
           <img 
-            src={`/media/TBT_Logo.png`} 
+            src={`/media/TBI_Logo.png`} 
             alt="Contact" 
             className="header-logo"
           />
