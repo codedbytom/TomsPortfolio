@@ -69,7 +69,7 @@ const SmsOptIn = ({ workOrderId }) => {
 
   return (
     <BaseLayout>
-      <img src={`/media/TBT_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" />
+      <img src={`/media/TBI_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" />
       <div id="optInBody" className="container mt-4">
         <h3 className="text-center mb-4">Text Message Demo</h3>
         <div className="card mb-4">

@@ -184,7 +184,7 @@ const SurveyFinal = () => {
 
     return (
         <div className="survey-container">
-            <img src={`/media/TBT_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" /> 
+            <img src={`/media/TBI_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" /> 
             <h1>{survey.title}</h1>
             {mode !== 'results' ? (
                 <form onSubmit={handleSubmit}>
