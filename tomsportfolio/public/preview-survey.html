@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TomBuiltIt Survey</title>
+    <meta property="og:title" content="TomBuiltIt Survey Demo" />
+    <meta property="og:description" content="Try out our interactive SMS + survey demo!" />
+    <meta property="og:image" content="https:///www.tombuiltit.net/media/surveyFeedback.png" />
+    <meta property="og:url" content="https:///www.tombuiltit.net/text-demo/survey/" />
+    <meta name="twitter:card" content="summary_large_image" />
+</head>
+  <body>
+     <script>
+        const guid = new URLSearchParams(window.location.search).get('guid');
+        const domain = "https:///www.tombuiltit.net";
+        const destination = guid
+            ? `/text-demo/survey/${guid}`
+            : '/text-demo/survey';
+        window.location.href = domain + destination;
+    </script>
+    <noscript>
+      <p>If you're not redirected, <a href="/text-demo/survey">click here</a>.</p>
+    </noscript>
+  </body>
+</html>
