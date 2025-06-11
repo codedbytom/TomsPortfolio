@@ -17,7 +17,7 @@ const SurveyFinal = () => {
     const navigate = useNavigate(); // Import useNavigate
     const [survey, setSurvey] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const  surveyId  = useParams();
+    const surveyId  = useParams();
     const [searchParams] = useSearchParams();
     const [answers, setAnswers] = useState({});
     const [comments, setComments] = useState({});
@@ -128,7 +128,7 @@ const SurveyFinal = () => {
         // Transform answers object into array of SurveyResponseAnswer objects
         const answersArray = Object.entries(answers).flatMap(([questionId, answer]) => {
             const question = survey.questions.find(q => q.id === parseInt(questionId));
-            const questionTypeID = question?.questionTypeID ?? null;
+            var questionTypeID = question?.questionTypeID ?? null;
             
             if(questionTypeID == null){
                 questionTypeID = survey.questions?.[questionId][0].questionTypeID;

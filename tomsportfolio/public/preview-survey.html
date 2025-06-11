@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TomBuiltIt Survey</title>
+    <meta property="og:title" content="TomBuiltIt Survey Demo" />
+    <meta property="og:description" content="Try out our interactive SMS + survey demo!" />
+    <meta property="og:image" content="https:///www.tombuiltit.net/media/surveyFeedback.png" />
+    <meta property="og:url" content="https:///www.tombuiltit.net/text-demo/survey/" />
+    <meta name="twitter:card" content="summary_large_image" />
+</head>
+  <body>
+     <script>
+        const guid = new URLSearchParams(window.location.search).get('guid');
+
+        const origin = window.location.origin;
+
+        // Decide target based on where the preview-survey.html is served from
+        let redirectBase;
+
+        if (origin.includes("https://nice-dune-051f70e10.6.azurestaticapps.net")) {
+            redirectBase = "https://nice-dune-051f70e10.6.azurestaticapps.net/text-demo/survey/";
+        } else {
+            redirectBase = "https://tombuiltit.net/text-demo/survey/";
+        }
+
+        // Update fallback link
+        const fallbackLink = document.getElementById("fallback-link");
+        if (fallbackLink) {
+        fallbackLink.href = destination;
+        }
+
+        window.location.href = redirectBase + guid;
+    </script>
+    <noscript>
+      <p>If you're not redirected, <a id="fallback-link" href="#">click here</a>.</p>
+    </noscript>
+  </body>
+</html>

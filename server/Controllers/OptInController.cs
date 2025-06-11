@@ -195,7 +195,18 @@ namespace server.Controllers
                                                 .Select(mt => mt.TemplateText)
                                                 .FirstOrDefaultAsync() ?? string.Empty;
 
-                surveyMessage.Url = $"/text-demo/survey/{_guidEncoder.EncodeGuidToBase64(surveyResponse.ResponseGuid)}"; // Use the service
+                string domain = HttpContext.Request.Host.ToString();
+
+                //Need to do a preview-survey.html to generate the smart preview
+                //in text messages
+                if (domain.Contains("localhost") == false)
+                {
+                    surveyMessage.Url = $"/preview-survey.html?guid={_guidEncoder.EncodeGuidToBase64(surveyResponse.ResponseGuid)}";
+                }
+                else
+                {
+                    surveyMessage.Url = $"/text-demo/survey/{_guidEncoder.EncodeGuidToBase64(surveyResponse.ResponseGuid)}"; // Use the service
+                }
 
                 var fullUrl = $"{_apiUrl}{surveyMessage.Url}"; // Use the service
                 surveyMessage.Content = surveyMessage.Content.Replace("{url}", fullUrl);
