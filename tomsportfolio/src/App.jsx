@@ -32,7 +32,6 @@ function App() {
         <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/admin/test-page" element={<TestPage />} />
         <Route path="/admin/kill-sms" element={<KillSms />} />
-
       </Routes>
     </Router>
   )
