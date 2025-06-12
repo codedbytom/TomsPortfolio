@@ -199,13 +199,14 @@ namespace server.Controllers
 
                 //Need to do a preview-survey.html to generate the smart preview
                 //in text messages
-                if (domain.Contains("localhost") == false)
+                if (domain.Contains("localhost"))
                 {
-                    surveyMessage.Url = $"/preview-survey.html?guid={_guidEncoder.EncodeGuidToBase64(surveyResponse.ResponseGuid)}";
+                    surveyMessage.Url = $"/text-demo/survey/{_guidEncoder.EncodeGuidToBase64(surveyResponse.ResponseGuid)}"; // Use the service
+
                 }
                 else
                 {
-                    surveyMessage.Url = $"/text-demo/survey/{_guidEncoder.EncodeGuidToBase64(surveyResponse.ResponseGuid)}"; // Use the service
+                    surveyMessage.Url = $"/preview-survey.html?guid={_guidEncoder.EncodeGuidToBase64(surveyResponse.ResponseGuid)}";
                 }
 
                 var fullUrl = $"{_apiUrl}{surveyMessage.Url}"; // Use the service
