@@ -55,6 +55,10 @@ body {
   opacity: 0.8;
 }
 
+.checkbox-label:hover {
+  background-color: var(--background-secondary) !important;
+}
+
 /* Hamburger menu icon styling */
 .navbar-toggler {
   border-color: var(--border-color) !important;

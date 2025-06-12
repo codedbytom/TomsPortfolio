@@ -1,6 +1,11 @@
 {
     "routes": [
       {
+      "route": "/preview-survey.html",
+      "allowedRoles": ["anonymous"],
+      "serve": "/preview-survey.html"
+    },
+      {
         "route": "/*",
         "serve": "/index.html",
         "statusCode": 200
