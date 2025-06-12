@@ -9,6 +9,7 @@ using server.Models.DTO.Survey;
 using Vonage.Meetings.DeleteTheme;
 using Microsoft.Extensions.Options;
 using server.Models.DTO;
+using Jose;
 
 namespace server.Controllers
 {
@@ -77,8 +78,21 @@ namespace server.Controllers
                                         .FirstOrDefaultAsync();
 
             if (surveyReponse == null || messageTemplateText == null) return NotFound();
-            var baseUrl = $"{_apiUrl}/text-demo/survey/results/{surveyResponseID}";
-            var content = messageTemplateText?.Replace("{url}", baseUrl) ?? "Thank you for participating";
+
+            string domain = HttpContext.Request.Host.ToString();
+            var baseString = string.Empty;
+            //Need to do a preview-survey.html to generate the smart preview
+            //in text messages
+            if (domain.Contains("localhost") == false)
+            {
+                baseString = $"/preview-results.html?guid={surveyResponseID}";
+            }
+            else
+            {
+                baseString = $"/text-demo/survey/results/{surveyResponseID}"; // Use the service
+            }
+            
+            var content = messageTemplateText?.Replace("{url}", baseString) ?? "Thank you for participating";
             content = content?.Replace("{Contact Name}", surveyReponse?.Contact?.Name) ?? "";
 
             var completionText = new Models.Message
