@@ -6,11 +6,10 @@ import './Survey.css';
 import axios from 'axios';
 
 const LoadingSkeleton = () => (
-    <div className="loading-skeleton">
-        <div className="skeleton-title" style={{ width: '60%', height: '32px', background: '#f0f0f0', marginBottom: '20px' }}></div>
-        <div className="skeleton-text" style={{ width: '80%', height: '20px', background: '#f0f0f0', marginBottom: '10px' }}></div>
-        <div className="skeleton-text" style={{ width: '70%', height: '20px', background: '#f0f0f0' }}></div>
-    </div>
+  <div className="flex flex-col items-center justify-center h-64">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    <p className="mt-4 text-gray-600">Loading survey...</p>
+  </div>
 );
 
 const SurveyFinal = () => {
