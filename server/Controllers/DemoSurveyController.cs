@@ -85,11 +85,11 @@ namespace server.Controllers
             //in text messages
             if (domain.Contains("localhost") == false)
             {
-                baseString = $"/preview-results.html?guid={surveyResponseID}";
+                baseString = $"{_apiUrl}/preview-results.html?guid={surveyResponseID}";
             }
             else
             {
-                baseString = $"/text-demo/survey/results/{surveyResponseID}"; // Use the service
+                baseString = $"{_apiUrl}/text-demo/survey/results/{surveyResponseID}"; // Use the service
             }
             
             var content = messageTemplateText?.Replace("{url}", baseString) ?? "Thank you for participating";
