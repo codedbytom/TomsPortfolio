@@ -54,6 +54,8 @@ function HobbyCard({ hobby }) {
                                     Solve Today’s Puzzle
                                 </a>
                                 <br />
+                            <img src={mediaUrl} alt={title} className="img-fluid rounded" />
+
                             </div>
                         )}
                         {showPizza && (
@@ -71,9 +73,7 @@ function HobbyCard({ hobby }) {
                         )}
                         {mediaType === 'video' ? (
                             <video src={mediaUrl} controls className="w-100 rounded" />
-                        ) : (
-                            <img src={mediaUrl} alt={title} className="img-fluid rounded" />
-                        )}
+                        ) :(<div></div>)}
                     </div>
                 )}
                  
