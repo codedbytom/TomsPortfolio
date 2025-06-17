@@ -94,12 +94,13 @@ export default function TextPreview() {
     }
 
     try {
+      setSent(true); //Disable the send button
+
       const response = await axios.post(`${import.meta.env.VITE_API_URL_HTTP}/api/OptIn/SendText`, {
         phoneNumber: phoneNumber,
         messageContent: messageTemplate
       });
       
-      setSent(true);
       setStep(7); //Show typing indicator
       setTimeout(() => setStep(8), 1500); //Show message from the phone number
     } catch (error) {
