@@ -30,7 +30,7 @@ function NightmareCard({ title, summary, children }) {
             <div className="card-header d-flex justify-content-between align-items-center">
                 <h5 className="mb-0">{title}</h5>
                 <button
-                    className="btn btn-sm btn-outline-secondary"
+                    className="btn btn-primary mt-3 bluebtn-text"
                     onClick={(e) => {
                         e.stopPropagation();
                         setOpen(!open);

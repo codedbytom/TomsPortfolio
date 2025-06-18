@@ -9,10 +9,9 @@ export default function Resume() {
             <a
                 href={`./Thomas_Evanko_Senior_Developer_Resume_Sanitized.pdf`}
                 download
-                className="btn btn-primary mt-3"
+                className="btn btn-primary mt-3 bluebtn-text"
                 target="_blank"
                 rel="noopener noreferrer"
-                id="downloadResume"
             >
                 📄 Download Resume
             </a>

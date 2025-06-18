@@ -33,7 +33,7 @@ function HobbyCard({ hobby }) {
                 <p className="card-text">{description}</p>
 
                 <button
-                    className="btn btn-sm btn-outline-primary"
+                    className="btn btn-primary mt-3 bluebtn-text"
                     onClick={() => setShowMedia(prev => !prev)}
                 >
                     {showMedia ? 'Hide' : 'Show'} {mediaType === 'video' ? 'Video' : 'Photo'}
@@ -49,7 +49,7 @@ function HobbyCard({ hobby }) {
                                     href="https://www.chess.com/daily-chess-puzzle"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="btn btn-sm btn-outline-primary"
+                                    className="btn btn-primary mt-3 bluebtn-text"
                                 >
                                     Solve Today’s Puzzle
                                 </a>

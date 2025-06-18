@@ -13,8 +13,8 @@
         icon: "🍕",
         description: "I make my own pizza dough and love experimenting with flavors.",
         mediaGallery: [
-            "/media/IMG_1002.jpg",
-            "/media/IMG_1326.jpg",
+            "/media/pesto.jpeg",
+            "/media/bbqChicken.jpeg",
             "/media/IMG_4474.jpg",
             "/media/IMG_4543.jpg",
             "/media/IMG_5450.jpg",

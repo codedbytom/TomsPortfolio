@@ -212,6 +212,10 @@ li {
   color: white !important;
 }
 
+.bluebtn-text{
+  color: white !important;
+}
+
 button a,
 .btn a {
   color: white !important;         /* Inherit the button's text color */
