@@ -216,6 +216,11 @@ li {
   color: white !important;
 }
 
+.country-code-select{
+  background-color: var(--background-primary) !important;
+  color: var(--text-primary) !important;
+}
+
 button a,
 .btn a {
   color: white !important;         /* Inherit the button's text color */

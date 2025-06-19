@@ -89,7 +89,7 @@ const SmsOptIn = ({ workOrderId }) => {
                 onChange={handleInputChange}
                 title="Please use only letters, hyphens, and apostrophes"
                 required
-                className="form-control"
+                className="form-control survey-text-area"
               />
             </div>
           </div>
@@ -110,7 +110,7 @@ const SmsOptIn = ({ workOrderId }) => {
                 </select>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control survey-text-area"
                   id="PhoneNumber"
                   name="phoneNumber"
                   inputMode="numeric"
