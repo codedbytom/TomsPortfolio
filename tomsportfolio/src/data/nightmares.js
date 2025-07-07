@@ -1,10 +1,10 @@
 ﻿export const nightmares = [
     {
         id: 'downSystem',
-        title: 'Symptoms of A Down System',
+        title: "🎱 Symptoms of A Down System",
         summary: 'A previous employers solution for dealing with an unresponsive website for clients and internal users.',
         solution:
-            'Not easy, and hard to pinpoint what exactly resolved the system performance. I was able to get the system to stop with multiple database related fixes and optimizations',
+            'Not easy, and hard to pinpoint what exactly resolved the system performance. I was able to get the system to stop spinning with multiple database related fixes and optimizations',
         content: [
             "Hired on full time for this company, their first internal dev hire. Always have used contractors to create and deal with their internal systems.",
             "Their lead business person hands me this word document and explains to me what needs to be done if employees or clients complained about spinning when using the websites.",
@@ -73,66 +73,66 @@
           "I rewrote the logic to batch inserts using table-valued parameters and ensured it didn’t block primary workflows."
         ]
       },
-      {
-        "id": "digital-survey-limbo",
-        "title": "🌀 Digital Survey: The Four-Year Spiral",
-        "summary": "A nearly complete project stuck in limbo due to shifting priorities and no ownership.",
-        "solution": "Merged critical branches, resolved edge case bugs, documented final deployment steps — but management never gave the go-ahead.",
-        "content": [
-          "Started in 2020. Still not live.",
-          "Despite being 95% done, Digital Survey kept getting deprioritized every time someone sneezed.",
-          "I fixed bugs, handled merges, and even built modular client based 'WebPlugins' that would isolation the unique client logic from the core Digital Survey codebase. Every time we were close, new ankle-biters popped up.",
-          "Eventually, I stopped pushing. Why finish a race when leadership won't let you cross the finish line?"
-        ]
-      },
-      {
-        "id": "aws-pipe-dream",
-        "title": "☁️ The Great AWS Pipe Dream",
-        "summary": "Two devs. No QA. No CI/CD. But sure, let’s promise AWS in three months.",
-        "solution": "Raised concerns repeatedly. Explained scope and resource gaps. Suggested phased migration with realistic timelines. Ignored.",
-        "content": [
-          "An old boss promised a full AWS migration to clients without asking any engineers or hiring anyone with cloud experience.",
-          "No CI/CD. No DevOps. No PM. No roadmap. No dedicated QA. No documentation on our applications functionality or workflows. Just vibes.",
-          "I warned them: two devs with no cloud experience can’t lift and shift 10+ legacy apps without imploding.",
-          "They nodded. Then went back to their PowerPoints."
-        ]
-      },
+      // {
+      //   "id": "digital-survey-limbo",
+      //   "title": "🌀 Digital Survey: The Four-Year Spiral",
+      //   "summary": "A nearly complete project stuck in limbo due to shifting priorities and no ownership.",
+      //   "solution": "Merged critical branches, resolved edge case bugs, documented final deployment steps — but management never gave the go-ahead.",
+      //   "content": [
+      //     "Started in 2020. Still not live.",
+      //     "Despite being 95% done, Digital Survey kept getting deprioritized every time someone sneezed.",
+      //     "I fixed bugs, handled merges, and even built modular client based 'WebPlugins' that would isolation the unique client logic from the core Digital Survey codebase. Every time we were close, new ankle-biters popped up.",
+      //     "Eventually, I stopped pushing. Why finish a race when leadership won't let you cross the finish line?"
+      //   ]
+      // },
+      // {
+      //   "id": "aws-pipe-dream",
+      //   "title": "☁️ The Great AWS Pipe Dream",
+      //   "summary": "Two devs. No QA. No CI/CD. But sure, let’s promise AWS in three months.",
+      //   "solution": "Raised concerns repeatedly. Explained scope and resource gaps. Suggested phased migration with realistic timelines. Ignored.",
+      //   "content": [
+      //     "An old boss promised a full AWS migration to clients without asking any engineers or hiring anyone with cloud experience.",
+      //     "No CI/CD. No DevOps. No PM. No roadmap. No dedicated QA. No documentation on our applications functionality or workflows. Just vibes.",
+      //     "I warned them: two devs with no cloud experience can’t lift and shift 10+ legacy apps without imploding.",
+      //     "They nodded. Then went back to their PowerPoints."
+      //   ]
+      // },
       {
         "id": "readpocalypse",
         "title": "📉 Death by 74 Million Read Database Operations",
         "summary": "A client viewing a single survey caused over 74.5 million database reads. Yes, millions.",
-        "solution": "Profiled the app using SQL Server Profiler. Identified N+1 queries and overzealous joins. Raised concerns repeatedly. Leadership still thinks 'the system works.'",
+        "solution": "Profiled the app using SQL Server Profiler. Identified N+1 queries and overzealous joins.'",
         "content": [
           "I was casually checking the profiler logs after a client complained about load time.",
           "A single page view? 74.5 million reads.",
           "Turns out, every related table was being joined, repeatedly, per item in a loop. Nested inside more loops. With no limit. No batching. No caching.",
           "This wasn’t an edge case. It was production.",
-          "I documented it. I flagged it. I warned them. But they shrugged. And so, we continue, slowly, bleeding storage I/O on every click.",
-          "The conservative estimate for a client user viewing a survey: 15 dollars PER view"
-        ]
-      },
-      {
-        "id": "test-script-fantasy",
-        "title": "🧪 Just Write Some Tests",
-        "summary": "Boss asked for test scripts... after years of zero guidance or test planning.",
-        "solution": "Explained that testing needs direction, edge cases, and real use cases, not a vague request thrown over the fence.",
-        "content": [
-          "Boss: 'Can you write tests for Digital Survey?'",
-          "Me: 'What do you want tested?'",
-          "Boss: 'You know… the usual. Just make it work.'",
-          "After years of no QA investment, no testing standards, and no documentation, he wanted me to magically know what to test and how. Classic."
-        ]
-      },
-      {
-        "id": "client-messaging-stall",
-        "title": "📨 7 Years of Promises, 0 Delivery",
-        "summary": "Text-based client messaging sat on the shelf until I solo’d a demo under pressure.",
-        "solution": "Built it from scratch using Razor, Vonage, and .NET Core backend. Pushed a working MVP. Then... silence from leadership.",
-        "content": [
-          "Clients had begged for messaging tools for *years*.",
-          "Boss talked a big game but never greenlit anything.",
-          "I built the damn thing in a weekend, with no guidance, no documentation, and no QA support. It worked, showcasing the power of the new tech capabilites of the WebSurvey platform. Clients were excited asking 'Can we use this tomorrow?'. Then? Nothing. No rollout plan. No support. Just inertia.",
-          "It was a win. But also a warning — leadership doesn’t push the last inch."
+          //"I documented it. I flagged it. I warned them. But they shrugged. And so, we continue, slowly, bleeding storage I/O on every click.",
+          //"The conservative estimate for a client user viewing a survey: 15 dollars PER view"
         ]
       }
+      // {
+      //   "id": "test-script-fantasy",
+      //   "title": "🧪 Just Write Some Tests",
+      //   "summary": "Boss asked for test scripts... after years of zero guidance or test planning.",
+      //   "solution": "Explained that testing needs direction, edge cases, and real use cases, not a vague request thrown over the fence.",
+      //   "content": [
+      //     "Boss: 'Can you write tests for Digital Survey?'",
+      //     "Me: 'What do you want tested?'",
+      //     "Boss: 'You know… the usual. Just make it work.'",
+      //     "After years of no QA investment, no testing standards, and no documentation, he wanted me to magically know what to test and how. Classic."
+      //   ]
+      // },
+      // {
+      //   "id": "client-messaging-stall",
+      //   "title": "📨 7 Years of Promises, 0 Delivery",
+      //   "summary": "Text-based client messaging sat on the shelf until I solo’d a demo under pressure.",
+      //   "solution": "Built it from scratch using Razor, Vonage, and .NET Core backend. Pushed a working MVP. Then... silence from leadership.",
+      //   "content": [
+      //     "Clients had begged for messaging tools for *years*.",
+      //     "Boss talked a big game but never greenlit anything.",
+      //     "I built the damn thing in a weekend, with no guidance, no documentation, and no QA support. It worked, showcasing the power of the new tech capabilites of the WebSurvey platform. Clients were excited asking 'Can we use this tomorrow?'. Then? Nothing. No rollout plan. No support. Just inertia.",
+      //     "It was a win. But also a warning — leadership doesn’t push the last inch."
+      //   ]
+      // }
 ];

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import '../styles/NightmareCard.css'; // Make sure to import the CSS
 
-function NightmareCard({ title, summary, children }) {
+function NightmareCard({ title, summary, solution, children }) {
     const [open, setOpen] = useState(false);
     const [height, setHeight] = useState(0);
     const contentRef = useRef(null);
@@ -47,7 +47,9 @@ function NightmareCard({ title, summary, children }) {
                 >
                     <div ref={contentRef} className="pt-3 border-top">
                         {children}
+                        <p className="card-text border-top">Solution: {solution}</p>
                     </div>
+                   
                 </div>
             </div>
         </div>

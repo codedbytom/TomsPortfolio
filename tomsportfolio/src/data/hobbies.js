@@ -4,7 +4,7 @@
         title: "Fitness & Spartan Races",
         icon: "🏃‍♂️",
         description: "Obstacle races keep me mentally and physically sharp.",
-        mediaUrl: "/media/Spartan_Race.mp4",
+        mediaUrl: "/media/SpartanRace.mp4",
         mediaType: "video"
     },
     {
