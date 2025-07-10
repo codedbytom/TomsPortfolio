@@ -23,11 +23,36 @@ namespace server.Services
             _context = context;
         }
 
+        /// <summary>
+        /// Handles the inbound text messages for STOP & HELP. If stopped, have the contacts matched phone number
+        /// be marked with the optout Date/Time. Sends a follow up text saying they've been unsubscribed.
+        /// </summary>
+        /// <param name="vonageSmsPayload"></param>
+        /// <returns></returns>
+        public async Task<bool> HandleInbound(Models.DTO.VonageSmsPayload vonageSmsPayload)
+        {
+            if (vonageSmsPayload.Keyword.ToLower() == "stop" && vonageSmsPayload.Msisdn != string.Empty)
+            {
+                var numberOptOut = "+" + vonageSmsPayload.Msisdn;
+                var contact = await _context.Contacts
+                        .Where(c => c.PhoneNumber == numberOptOut)
+                        .FirstOrDefaultAsync();
+                if (contact != null)
+                    contact.OptOutTime = DateTime.UtcNow;
+                return true;
+            }
+            else if (vonageSmsPayload.Keyword.ToLower() == "help" && vonageSmsPayload.Msisdn != string.Empty)
+            {
+                
+            }
+            return false;
+        }
+
         public async Task<int> MessageSendPreCheck(string phoneNumber)
         {
             // Check if we've sent too many messages recently
             int messageCount = await _context.Messages
-                .Where(m => m.PhoneNumber == phoneNumber && 
+                .Where(m => m.PhoneNumber == phoneNumber &&
                             m.SentAt > DateTime.UtcNow.AddHours(-1))
                 .CountAsync();
             return messageCount;
@@ -71,8 +96,6 @@ namespace server.Services
                     fromNumber = "+" + fromNumber;
                 }
 
-                _logger.LogDebug($"Sender number: {fromNumber}");
-
                 var request = new SendSmsRequest
                 {
                     To = message.PhoneNumber,
@@ -111,12 +134,6 @@ namespace server.Services
 
                 await _context.AddAsync(message);
                 await _context.SaveChangesAsync();
-
-                _logger.LogInformation($"Message sent successfully to {message.PhoneNumber}. " +
-                                     $"MessageId: {response.Messages[0].MessageId}, " +
-                                     $"Network: {response.Messages[0].Network}, " +
-                                     $"RemainingBalance: {response.Messages[0].RemainingBalance}");
-
             }
             catch (Exception ex)
             {
