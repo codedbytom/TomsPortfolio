@@ -3,6 +3,7 @@ using Vonage;
 using Vonage.Messaging;
 using server.data;
 using Microsoft.EntityFrameworkCore;
+using server.Models;
 
 namespace server.Services
 {
@@ -43,7 +44,12 @@ namespace server.Services
             }
             else if (vonageSmsPayload.Keyword.ToLower() == "help" && vonageSmsPayload.Msisdn != string.Empty)
             {
-                
+                var helpMessage = await _context.MessageTemplates
+                    .Where(mt => mt.MessageTypeId == (int)MessageTypeEnum.Help)
+                    .Select(mt => mt.TemplateText)
+                    .FirstOrDefaultAsync();
+
+                await SendMessageAsync(message: new Message());
             }
             return false;
         }
