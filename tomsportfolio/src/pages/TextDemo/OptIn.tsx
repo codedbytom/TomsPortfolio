@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import {BaseLayout } from '../../components/Layout';
 
-const SmsOptIn = ({ workOrderId }) => {
+const SmsOptIn = () => {
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
@@ -46,7 +46,6 @@ const SmsOptIn = ({ workOrderId }) => {
       const response = await axios.post(`${import.meta.env.VITE_API_URL_HTTP}/api/OptIn/AddContact`, {
         phoneNumber: `${formData.countryCode}${formData.phoneNumber}`,
         name: formData.name,
-        workOrderId: workOrderId,
       }); 
       
       
