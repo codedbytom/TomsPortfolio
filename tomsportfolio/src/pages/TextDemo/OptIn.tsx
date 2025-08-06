@@ -12,7 +12,7 @@ const SmsOptIn = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConsenting, setIsConsenting] = useState(false);
   const navigate = useNavigate(); // Import useNavigate
-  const handleInputChange = (e) => {
+  const handleInputChange = (e : React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -32,7 +32,7 @@ const SmsOptIn = () => {
     pingServer();
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Validate phone number length
     if (formData.phoneNumber.length < 9) {
@@ -58,9 +58,13 @@ const SmsOptIn = () => {
         }
       });
       
-    } catch (error) {
-      const errorMessage = error.response?.data || 'An error occurred';
-      alert(errorMessage);
+    } catch (error : any) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || error.message || 'An error occurred';
+        alert(errorMessage);
+      } else {
+        alert('An unexpected error occurred');
+      }
     } finally {
       setIsSubmitting(false);
     }

@@ -15,6 +15,7 @@ import KillSms from './pages/Admin/KillSms';
 import Survey from './pages/TextDemo/Survey';
 import ThankYou from './pages/TextDemo/ThankYou';
 import ScrollToTop from './components/ScrollToTop';
+import Playground from './pages/Playground/Playground';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/admin/test-page" element={<TestPage />} />
         <Route path="/admin/kill-sms" element={<KillSms />} />
+        <Route path="/playground" element={<Playground />} />
       </Routes>
     </Router>
 </ThemeProvider>
