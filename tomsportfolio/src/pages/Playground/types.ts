@@ -10,6 +10,7 @@ export type TextField = BaseField & {
 
 export type SelectField = BaseField & {
   type: 'select';
+  options: string[];
 };
 
 export type CheckBoxField = BaseField & {
