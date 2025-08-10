@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import {BaseLayout } from '../../components/Layout';
 
-const SmsOptIn = ({ workOrderId }) => {
+const SmsOptIn = () => {
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
@@ -12,7 +12,7 @@ const SmsOptIn = ({ workOrderId }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConsenting, setIsConsenting] = useState(false);
   const navigate = useNavigate(); // Import useNavigate
-  const handleInputChange = (e) => {
+  const handleInputChange = (e : React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -32,7 +32,7 @@ const SmsOptIn = ({ workOrderId }) => {
     pingServer();
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Validate phone number length
     if (formData.phoneNumber.length < 9) {
@@ -46,7 +46,6 @@ const SmsOptIn = ({ workOrderId }) => {
       const response = await axios.post(`${import.meta.env.VITE_API_URL_HTTP}/api/OptIn/AddContact`, {
         phoneNumber: `${formData.countryCode}${formData.phoneNumber}`,
         name: formData.name,
-        workOrderId: workOrderId,
       }); 
       
       
@@ -59,9 +58,13 @@ const SmsOptIn = ({ workOrderId }) => {
         }
       });
       
-    } catch (error) {
-      const errorMessage = error.response?.data || 'An error occurred';
-      alert(errorMessage);
+    } catch (error : any) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data || error.message || 'An error occurred';
+        alert(errorMessage);
+      } else {
+        alert('An unexpected error occurred');
+      }
     } finally {
       setIsSubmitting(false);
     }

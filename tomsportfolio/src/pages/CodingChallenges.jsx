@@ -4,7 +4,7 @@ import { nightmares } from '../data/nightmares'; //source for the coding nightma
 export default function CodingNightmares() {
     return (
         <MainLayout>
-            <h1 className="headerSpacing">Tom's Coding Nightmares</h1>
+            <h1 className="headerSpacing">Tom's Coding Challenges</h1>
             <h5>Note: These stories reflect anonymized and generalized experiences from legacy systems I’ve worked on. They are intended to showcase engineering challenges and how I approach them. Not to criticize individuals or companies.</h5>
             {nightmares.map(n => (
                 <NightmareCard key={n.id}
