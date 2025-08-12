@@ -10,5 +10,6 @@ namespace server.Services
         Task<int> MessageSendPreCheck(string phoneNumber);
         Task SendMessageAsync(Models.Message message);
         Task<bool> IsContactOptedIn(string phoneNumber);
+        Task<bool> HandleInbound(Models.DTO.VonageSmsPayload vonageSmsPayload);
     }
 }

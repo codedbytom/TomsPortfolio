@@ -4,8 +4,6 @@ using server.data;
 using server.Models;
 using server.Services;
 using server.Helpers;
-using Vonage.Messages;
-using System.Text;
 using Microsoft.Extensions.Options;
 
 namespace server.Controllers
@@ -249,7 +247,7 @@ namespace server.Controllers
         {
             return Ok(new { message = "pong", timestamp = DateTime.UtcNow });
         }
-        
+
         public class SendTextRequest
         {
             public string PhoneNumber { get; set; } = "";

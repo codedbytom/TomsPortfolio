@@ -13,3 +13,7 @@ select * from dbo.MessageTemplates
   Insert into dbo.MessageTemplates (MessageTypeId, TemplateText, Description)
   VALUES
   (4, 'Tom Built It: Thanks for participating! Here is your survey: {url}', 'Sent out for text messages with a survey link')
+
+  INSERT INTO dbo.MessageTemplates (MessageTypeId, TemplateText, Description)
+  VALUES
+  (5, 'You are receiving messages from TomBuiltIt Demo. Text STOP to unsubscribe.')
