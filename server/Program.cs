@@ -54,7 +54,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddHttpClient<IMessagingService, MessagingService>();
+//builder.Services.AddHttpClient<IMessagingService, MessagingService>();
 
 // Register SurveyService
 builder.Services.AddScoped<ISurveyService, SurveyService>();

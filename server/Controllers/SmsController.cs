@@ -2,8 +2,6 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.data;
-using server.Models;
-using Vonage.Users;
 using server.Services;
 
 namespace server.Controllers{
@@ -13,10 +11,14 @@ namespace server.Controllers{
     {
         private readonly AppDbContext _context;
         private readonly IMessagingService _messagingService;
-        public SmsController(AppDbContext context, IMessagingService messagingService)
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly ILogger<SmsController> _logger;
+        public SmsController(AppDbContext context, IMessagingService messagingService, IServiceScopeFactory serviceScopeFactory, ILogger<SmsController> logger)
         {
             _context = context;
             _messagingService = messagingService;
+            _serviceScopeFactory = serviceScopeFactory;
+            _logger = logger;
         }
 
         [HttpGet("status")]
@@ -36,8 +38,19 @@ namespace server.Controllers{
         [HttpPost("webhooks/inbound-sms")]
         public async Task<IActionResult> Unsubscribe([FromBody] Models.DTO.VonageSmsPayload body)
         {
-            await _messagingService.HandleInbound(body);
-            return NoContent();
+            _ = Task.Run(async () => {
+                try
+                {
+                    using var scope = _serviceScopeFactory.CreateScope();
+                    var svc = scope.ServiceProvider.GetRequiredService<IMessagingService>();
+                    await svc.HandleInbound(body); 
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error was found in Unsubscribe:");
+                }
+            });
+            return Ok();
         }
     }
 }

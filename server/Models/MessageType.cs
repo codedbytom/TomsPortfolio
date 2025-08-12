@@ -9,7 +9,7 @@
 
     public enum MessageTypeEnum
     {
-        Alert = 0,
+        Alert = 1,
         OptIn = 2,
         OptOut = 3,
         SurveyLink = 4,

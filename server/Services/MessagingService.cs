@@ -40,6 +40,21 @@ namespace server.Services
                         .FirstOrDefaultAsync();
                 if (contact != null)
                     contact.OptOutTime = DateTime.UtcNow;
+                    await _context.SaveChangesAsync();
+
+                var unsubscribedMessage = await _context.MessageTemplates
+                        .Where(um => um.MessageTypeId == (int)MessageTypeEnum.OptOut)
+                        .Select(um => um.TemplateText)
+                        .FirstOrDefaultAsync();
+                
+                Message stopMessageToSend = new Message
+                {
+                    PhoneNumber = vonageSmsPayload.Msisdn,
+                    Content = unsubscribedMessage ?? "This is a default stop message from Tom Built It",
+                    ContactId = contact?.Id
+                };
+
+                await SendMessageAsync(message: stopMessageToSend);
                 return true;
             }
             else if (vonageSmsPayload.Keyword.ToLower() == "help" && vonageSmsPayload.Msisdn != string.Empty)
@@ -49,7 +64,19 @@ namespace server.Services
                     .Select(mt => mt.TemplateText)
                     .FirstOrDefaultAsync();
 
-                await SendMessageAsync(message: new Message());
+                //Get the contact to associate with the help message
+                var numberOptOut = "+" + vonageSmsPayload.Msisdn;
+                var contact = await _context.Contacts
+                        .Where(c => c.PhoneNumber == numberOptOut)
+                        .FirstOrDefaultAsync();
+
+                Message helpMessageToSend = new Message
+                {
+                    PhoneNumber = vonageSmsPayload.Msisdn,
+                    Content = helpMessage ?? "This is a default help message from Tom Built It",
+                    ContactId = contact?.Id
+                };
+                await SendMessageAsync(message: helpMessageToSend);
             }
             return false;
         }
