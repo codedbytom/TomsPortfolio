@@ -1,6 +1,7 @@
 import React from 'react';
 import {FormBuilder } from './components/FormBuilder';
 import {FormField} from './types';
+import {MainLayout} from '../../components/Layout';
 
 const formConfig: FormField[] = [
     { type: 'text', name:'firstName', label:'First Name', required: true},
@@ -9,16 +10,19 @@ const formConfig: FormField[] = [
     { type: 'checkbox', name: 'subscribe', label: 'Subscribe to Newsletter', required: false},
 ];
 
-const handlFormSubmit = (data: Record<string, string>) =>{
+const handleFormSubmit = (data: Record<string, string>) =>{
     console.log('Form submitted:', data);
 };
 
 const FormPlayground = () => {
     return (
-        <div>
+        <MainLayout>
+            <div>
             <h1>Form Playground</h1>
-            <FormBuilder config={formConfig} onSubmit={handlFormSubmit}></FormBuilder>
-        </div>
+            <FormBuilder config={formConfig} onSubmit={handleFormSubmit}></FormBuilder>
+            </div>    
+        </MainLayout>
+        
 );
 };
 
