@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using server.Models;
 using server.data;
-using Vonage.ProactiveConnect.Lists;
 using server.Models.Surveys;
 using server.Models.DTO.Survey;
 

@@ -1,6 +1,7 @@
 // Create a BaseLayout (no navigation) and MainLayout (with navigation)
 import Navbar from './Navbar';
 import { ThemeToggle } from './ThemeToggle';
+import React from 'react'
 const BaseLayout = ({ children }) => (
   <div className="theme-wrapper">
     <div className="me-2">

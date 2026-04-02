@@ -6,7 +6,6 @@ using server.data;
 using Vonage.Common;
 using server.Models.Surveys;
 using server.Models.DTO.Survey;
-using Vonage.Meetings.DeleteTheme;
 using Microsoft.Extensions.Options;
 using server.Models.DTO;
 using Jose;
