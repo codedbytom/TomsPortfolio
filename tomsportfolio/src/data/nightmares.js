@@ -2,9 +2,9 @@
     {
         id: 'downSystem',
         title: "🎱 Symptoms of A Down System",
-        summary: 'A previous employers solution for dealing with an unresponsive website for clients and internal users.',
+        summary: "A previous employer's solution for dealing with an unresponsive website for clients and internal users.",
         solution:
-            'Not easy, and hard to pinpoint what exactly resolved the system performance. I was able to get the system to stop spinning with multiple database related fixes and optimizations',
+            "Difficult, and hard to pinpoint what exactly resolved the system performance. I was able to get the system to stop spinning with multiple database related fixes and optimizations",
         content: [
             "Hired on full time for this company, their first internal dev hire. Always have used contractors to create and deal with their internal systems.",
             "Their lead business person hands me this word document and explains to me what needs to be done if employees or clients complained about spinning when using the websites.",
@@ -27,24 +27,24 @@
       },
     {
         "id": "qa1-collapse",
-        "title": "🧨 The Great QA1 Collapse",
-        "summary": "QA1 crashed because a senior developer bypassed source control using Beyond Compare.",
+        "title": "🧨 The Great QA Collapse",
+        "summary": "QA server crashed with a process bypassing source control using Beyond Compare.",
         "solution": "Identified missing `bower_components` and corrupted `lib.js`. Restored correct versions, documented safe deploy practices, and put safeguards in place.",
         "content": [
           "Our QA1 environment suddenly stopped loading any static assets.",
-          "Turns out a senior developer used Beyond Compare to push files manually from his local machine, wiping out `bower_components` and replacing `lib.js` with a 2KB husk.",
+          "Turns out a new process used Beyond Compare to push files manually from the local machine, wiping out `bower_components` and replacing `lib.js` with a 2KB husk.",
           "Nobody knew what happened until I pieced it together hours later, at a bar, when it clicked.",
           "Logged in remotely, restored from a local backup, and got QA1 live again before anyone else even knew what broke."
         ]
       },
       {
         "id": "bad-dev-number-fetch",
-        "title": "🔢 A Dev’s Magical Number Fetcher",
+        "title": "🔢 The Magic Number Fetcher",
         "summary": "Why default to 0 when you can query the DB for a value you’ll overwrite anyway?",
         "solution": "Refactored logic to default to 0. Avoided an unnecessary DB hit every time an object was created.",
         "content": [
-          "A dev ran into an issue: a required field needed a number during object creation.",
-          "Instead of defaulting it, he wrote a complex function that hit the DB every time — just to fetch a number that got replaced later.",
+          "During object creation, a required numeric field had an unexpected sourcing problem.",
+          "Instead of defaulting it, a complex function was written that hit the DB every time to fetch a number that got replaced later.",
           "It added overhead, race conditions, and confusion. All for nothing.",
           "Suggested we just default to 0 and let the DB update it properly, issue gone."
         ]
@@ -68,7 +68,6 @@
         "solution": "Rewrote import logic to use bulk operations. Added isolation to prevent production contention. Deferred non-critical writes.",
         "content": [
           "The import process inserted each row one by one, hundreds, sometimes thousands, directly into production tables.",
-          "No batching. No queue. No async. Just raw, blocking inserts while users were live on the system.",
           "The result? System-wide slowdowns. Analyst pages froze. Clients couldn't view web pages. Everything spun.",
           "I rewrote the logic to batch inserts using table-valued parameters and ensured it didn’t block primary workflows."
         ]
