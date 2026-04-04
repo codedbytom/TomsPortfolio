@@ -36,7 +36,7 @@ function NightmareCard({ title, summary, solution, children }) {
                         setOpen(!open);
                     }}
                 >
-                    {open ? 'Collapse' : 'Read More'}
+                    {open ? 'Collapse' : 'Expand'}
                 </button>
             </div>
             <div className="card-body">
