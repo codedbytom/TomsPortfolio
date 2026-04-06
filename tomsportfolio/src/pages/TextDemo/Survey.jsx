@@ -4,19 +4,23 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ThemeToggle } from '../../components/ThemeToggle';
 import './Survey.css';
 import axios from 'axios';
+import { Loader, Text, Center, Table, Button, Anchor, SimpleGrid, Image } from '@mantine/core';
+import { MainLayout } from '../../components/Layout';
 
 const LoadingSkeleton = () => (
-  <div className="flex flex-col items-center justify-center h-64">
-    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-    <p className="mt-4 text-gray-600">Loading survey...</p>
-  </div>
+  <Center h={200}>
+    <div style={{ textAlign: 'center' }}>
+      <Loader size="lg" />
+      <Text mt="md" c="dimmed">Loading survey...</Text>
+    </div>
+  </Center>
 );
 
 const SurveyFinal = () => {
-    const navigate = useNavigate(); // Import useNavigate
+    const navigate = useNavigate();
     const [survey, setSurvey] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const surveyId  = useParams();
+    const surveyId = useParams();
     const [searchParams] = useSearchParams();
     const [answers, setAnswers] = useState({});
     const [comments, setComments] = useState({});
@@ -29,50 +33,37 @@ const SurveyFinal = () => {
         startDateTime: startDateRef,
         responseGuidID: '00000000-0000-0000-0000-000000000000'
     });
-    
-    
+
     const [column1, setItems] = useState([]);
     const [column2, setItems2] = useState([]);
 
-    const addItemToColumn1 = (newItem) => {
-        setItems(prevItems => [...prevItems, newItem]);
-    }
-
-    const addItemToColumn2 = (newItem) => {
-        setItems2(prevItems => [...prevItems, newItem]);
-    }
-    // Do this to remove the spacing on the root just for the survey page for mobile
+    const addItemToColumn1 = (newItem) => setItems(prev => [...prev, newItem]);
+    const addItemToColumn2 = (newItem) => setItems2(prev => [...prev, newItem]);
+    const id = surveyId.responseGuid || searchParams.get('id') || 'U5bXdq6KnEqyt2DO5grNUQ';
+    
     useEffect(() => {
-    const root = document.getElementById('root');
-    root.classList.add('survey-mode');
-    return () => root.classList.remove('survey-mode');
+        const root = document.getElementById('root');
+        root.classList.add('survey-mode');
+        return () => root.classList.remove('survey-mode');
     }, []);
 
     useEffect(() => {
         const fetchSurvey = async () => {
             try {
-                console.log('Fetching survey');
-                const id = surveyId.responseGuid || searchParams.get('id') || 'U5bXdq6KnEqyt2DO5grNUQ';
-                if(mode == 'results' && id){
+                if (mode === 'results' && id) {
                     const response = await axios.get(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/results/${id}`);
                     setSurvey(response.data);
-                }
-                else{
+                } else {
                     const response = await axios.get(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/${id}`);
                     setSurvey(response.data);
-                    
-                    // Initialize answers and comments state based on questions
+
                     const initialAnswers = {};
                     const initialComments = {};
 
-                    var question = response.data.questions.find(q => q.questionTypeID === 3);
-                    
-                    question.answerOptions.forEach((answer, idx) => {
-                        if(idx % 2 === 0){
-                            addItemToColumn1(answer);
-                        }else{
-                            addItemToColumn2(answer);
-                        }
+                    const multiChoiceQuestion = response.data.questions.find(q => q.questionTypeID === 3);
+                    multiChoiceQuestion?.answerOptions.forEach((answer, idx) => {
+                        if (idx % 2 === 0) addItemToColumn1(answer);
+                        else addItemToColumn2(answer);
                     });
 
                     response.data.questions.forEach(q => {
@@ -81,9 +72,7 @@ const SurveyFinal = () => {
                     });
                     setAnswers(initialAnswers);
                     setComments(initialComments);
-                    setFormData({
-                        responseGuidID: id
-                    });
+                    setFormData({ responseGuidID: id });
                 }
             } catch (error) {
                 console.error('Error fetching survey:', error);
@@ -91,22 +80,15 @@ const SurveyFinal = () => {
                 setIsLoading(false);
             }
         };
-
         fetchSurvey();
-    }, [surveyId, searchParams]);
+    }, [id, mode]);
 
     const handleAnswerChange = (questionId, value) => {
-        setAnswers(prev => ({
-            ...prev,
-            [questionId]: value
-        }));
+        setAnswers(prev => ({ ...prev, [questionId]: value }));
     };
 
     const handleCommentChange = (questionId, value) => {
-        setComments(prev => ({
-            ...prev,
-            [questionId]: value
-        }));
+        setComments(prev => ({ ...prev, [questionId]: value }));
     };
 
     const handleMultiChoiceChange = (questionId, option) => {
@@ -118,23 +100,13 @@ const SurveyFinal = () => {
         }));
     };
 
-
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        // Transform answers object into array of SurveyResponseAnswer objects
         const answersArray = Object.entries(answers).flatMap(([questionId, answer]) => {
             const question = survey.questions.find(q => q.id === parseInt(questionId));
-            var questionTypeID = question?.questionTypeID ?? null;
-            
-            if(questionTypeID == null){
-                questionTypeID = survey.questions?.[questionId][0].questionTypeID;
-            }
+            var questionTypeID = question?.questionTypeID ?? survey.questions?.[questionId]?.[0]?.questionTypeID ?? null;
 
             if (Array.isArray(answer)) {
-                // Multiple choice: one SurveyResponseAnswer per selected option
                 return answer.map(option => ({
                     surveyQuestionTemplateId: parseInt(questionId),
                     AnswerOptionTemplateId: option,
@@ -142,19 +114,15 @@ const SurveyFinal = () => {
                     comment: comments[questionId]
                 }));
             } else {
-                // Single answer: one SurveyResponseAnswer
                 return [{
                     surveyQuestionTemplateId: parseInt(questionId),
                     FreeTextAnswer: questionTypeID === 4 ? answer.toString() : null,
                     AnswerOptionTemplateId: questionTypeID === 4 ? null : answer.toString(),
                     answeredAt: new Date().toISOString(),
-                    comment: questionTypeID === 4 ? "" : comments[questionId]
+                    comment: questionTypeID === 4 ? '' : comments[questionId]
                 }];
             }
         });
-
-        // Transform comments object into array
-        const commentsArray = Object.values(comments);
 
         const submitData = {
             Answers: answersArray,
@@ -162,160 +130,150 @@ const SurveyFinal = () => {
             StartDateTime: startDateRef.current
         };
 
-        console.log('Survey submitted:', submitData);
-        
-        try{ 
-          const response = await axios.post(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/submit`, submitData);
+        try {
+            await axios.post(`${import.meta.env.VITE_API_URL_HTTP}/api/DemoSurvey/submit`, submitData);
         } catch (error) {
-          console.error('Error submitting survey:', error);
-        }
-        finally{
-          navigate( { pathname: `/text-demo/thank-you/${formData.responseGuidID}` });
+            console.error('Error submitting survey:', error);
+        } finally {
+            navigate({ pathname: `/text-demo/thank-you/${formData.responseGuidID}` });
         }
     };
 
-    if (isLoading) {
-        return <LoadingSkeleton />;
-    }
-
-    if (!survey) {
-        return <div>Error loading survey</div>;
-    }
+    if (isLoading) return <LoadingSkeleton />;
+    if (!survey) return <Text>Error loading survey</Text>;
 
     return (
+        
         <div className="survey-container">
-            <div className="me-2">
-                <ThemeToggle />
+            <div>
+                <ThemeToggle/>
             </div>
-            <img src={`/media/TBI_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" /> 
+            <Image src="/media/TBI_Logo.png" alt="Logo" h={64} w="auto" fit="contain" mx="auto" mb="md" className="SmsOptInLogo" />
             <h1>{survey.title}</h1>
+
             {mode !== 'results' ? (
                 <form onSubmit={handleSubmit}>
-                {survey.questions.map((question) => (
-                    <div key={question.id} className="question-block">
-                        <h2 className="question-text">{question.text}</h2>
-                        {question.questionTypeID === 3 && (
-                            <div className="checkbox-group">
-                                <div className="row">
-                                <div className="col-md-6">
-                                    { column1.map((option, i) => 
-                                        <div class="form-check">
-                                            <label key={option.id} className="checkbox-label">
-                                        <input
-                                            type="checkbox"
-                                            checked={answers[question.id]?.includes(option.id)}
-                                            onChange={() => handleMultiChoiceChange(question.id, option.id)}
-                                        />
-                                        {option.text}
-                                    </label>
+                    {survey.questions.map((question) => (
+                        <div key={question.id} className="question-block">
+                            <h2 className="question-text">{question.text}</h2>
+
+                            {question.questionTypeID === 3 && (
+                                <div className="checkbox-group">
+                                    <SimpleGrid cols={2} spacing="sm">
+                                        <div>
+                                            {column1.map((option) => (
+                                                <label key={option.id} className="checkbox-label">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={answers[question.id]?.includes(option.id)}
+                                                        onChange={() => handleMultiChoiceChange(question.id, option.id)}
+                                                    />
+                                                    {option.text}
+                                                </label>
+                                            ))}
                                         </div>
-                                    )}
-                                </div>
-                                <div className="col-md-6">
-                                    { column2.map((option, i) => 
-                                        <div class="form-check">
-                                            <label key={option.id} className="checkbox-label">
-                                        <input
-                                            type="checkbox"
-                                            checked={answers[question.id]?.includes(option.id)}
-                                            onChange={() => handleMultiChoiceChange(question.id, option.id)}
-                                        />
-                                        {option.text}
-                                    </label>
+                                        <div>
+                                            {column2.map((option) => (
+                                                <label key={option.id} className="checkbox-label">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={answers[question.id]?.includes(option.id)}
+                                                        onChange={() => handleMultiChoiceChange(question.id, option.id)}
+                                                    />
+                                                    {option.text}
+                                                </label>
+                                            ))}
                                         </div>
-                                    )}
+                                    </SimpleGrid>
                                 </div>
-                            </div>
-                            </div>
-                        )}
+                            )}
 
-                        {question.questionTypeID === 4 && (
-                            <textarea
-                                value={answers[question.id] || ''}
-                                onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                                placeholder="Enter your answer..."
-                                className="survey-text-area"
-                            />
-                        )}
+                            {question.questionTypeID === 4 && (
+                                <textarea
+                                    value={answers[question.id] || ''}
+                                    onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                                    placeholder="Enter your answer..."
+                                    className="survey-text-area"
+                                />
+                            )}
 
-                        {question.questionTypeID === 2 && (
+                            {question.questionTypeID === 2 && (
+                                <div className="recommendation-buttons">
+                                    {question.answerOptions.map((answer) => (
+                                        <button
+                                            key={answer.id}
+                                            type="button"
+                                            className={`recommendation-button${answers[question.id] === answer.id ? ' selected' : ''}`}
+                                            onClick={() => handleAnswerChange(question.id, answer.id)}
+                                        >
+                                            {answer.text}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
 
-                            <div className="recommendation-buttons">
-                                {question.answerOptions.map((answer) => (
-                                    <button
-                                    type="button"
-                                    className={`recommendation-button ${answers[question.id] === answer.id ? 'selected' : ''}`}
-                                    onClick={() => handleAnswerChange(question.id,answer.id)}
-                                >
-                                    {answer.text}
-                                </button>
-                                ))}
-                            </div>
-                        )}
+                            {question.questionTypeID === 1 && (
+                                <div className="rating-container">
+                                    {question.answerOptions.map((index) => (
+                                        <button
+                                            key={index.id}
+                                            type="button"
+                                            className={`rating-button${answers[question.id] === index.id ? ' selected' : ''}`}
+                                            onClick={() => handleAnswerChange(question.id, index.id)}
+                                        >
+                                            {index.text}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
 
-                        {question.questionTypeID === 1 && (
-                            <div className="rating-container">
-                                {question.answerOptions.map((index) => (
-                                    <button
-                                        key={index.id}
-                                        type="button"
-                                        className={`rating-button ${answers[question.id] === (index.id) ? 'selected' : ''}`}
-                                        onClick={() => handleAnswerChange(question.id, index.id)}
-                                    >
-                                        {index.text}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
+                            {question.questionTypeID !== 4 && (
+                                <textarea
+                                    placeholder="Additional comments..."
+                                    value={comments[question.id] || ''}
+                                    onChange={(e) => handleCommentChange(question.id, e.target.value)}
+                                    className="comment-textarea"
+                                />
+                            )}
+                        </div>
+                    ))}
 
-                        {question.questionTypeID !== 4 && ( <textarea
-                            placeholder="Additional comments..."
-                            value={comments[question.id] || ''}
-                            onChange={(e) => handleCommentChange(question.id, e.target.value)}
-                            className="comment-textarea"
-                        />)} 
-                        {/* only show for non-text questions */}
-                    </div>
-                ))}
-                
-                <button type="submit" className="submit-button">
-                    Submit Survey
-                </button>
-            </form>
+                    <button type="submit" className="submit-button">Submit Survey</button>
+                </form>
             ) : (
                 <div>
-                <table id="resultsTable" className="table table-striped table-bordered table-hover table-sm">
-                <thead>
-                    <tr className="bg-gray-100 text-left">
-                        <th className="p-3 font-semibold results-th">Question</th>
-                        <th className="p-3 font-semibold results-th">Answer / Comment</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {survey.questions.map((question, idx) => (
-                    <tr key={idx}>
-                        <td className="p-3 align-top results-td">{question.text}</td>
-                        <td className="p-3 align-top results-td">
-                            {question.answerOptions.map((answer, i) => (
-                                <div key={i} className="mb-2">
-                                <div><strong>{question.questionTypeID !== 4 ? answer.text : answer.freeTextAnswer}</strong></div>
-                                    {answer?.comment && question.questionTypeID !== 3  && (
-                                    <div className="text-gray-500 italic">{answer.comment}</div>
-                                    )}
-                                </div>
-                                
+                    <Table striped withBorder withColumnBorders highlightOnHover>
+                        <Table.Thead>
+                            <Table.Tr>
+                                <Table.Th>Question</Table.Th>
+                                <Table.Th>Answer / Comment</Table.Th>
+                            </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody>
+                            {survey.questions.map((question, idx) => (
+                                <Table.Tr key={idx}>
+                                    <Table.Td>{question.text}</Table.Td>
+                                    <Table.Td>
+                                        {question.answerOptions.map((answer, i) => (
+                                            <div key={i} style={{ marginBottom: '0.5rem' }}>
+                                                <strong>{question.questionTypeID !== 4 ? answer.text : answer.freeTextAnswer}</strong>
+                                                {answer?.comment && question.questionTypeID !== 3 && (
+                                                    <Text size="sm" c="dimmed" fs="italic">{answer.comment}</Text>
+                                                )}
+                                            </div>
+                                        ))}
+                                        {question.questionTypeID === 3 && (
+                                            <Text size="sm" c="dimmed" fs="italic">{question.answerOptions[0]?.comment}</Text>
+                                        )}
+                                    </Table.Td>
+                                </Table.Tr>
                             ))}
-                            {question.questionTypeID == 3 && (
-                                <div className="text-gray-500 italic">{question.answerOptions[0]?.comment}</div>
-                            )}
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-                </table>
-                    <div className="text-center mt-4">
-                        <a href="/" class="btn btn-primary">Back to Home</a>
-                    </div>
+                        </Table.Tbody>
+                    </Table>
+
+                    <Center mt="xl">
+                        <Button component={Link} to="/">Back to Home</Button>
+                    </Center>
                 </div>
             )}
         </div>

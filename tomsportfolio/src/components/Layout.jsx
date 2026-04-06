@@ -1,26 +1,24 @@
-// Create a BaseLayout (no navigation) and MainLayout (with navigation)
+import { Container } from '@mantine/core';
 import Navbar from './Navbar';
 import { ThemeToggle } from './ThemeToggle';
-import React from 'react'
+
 const BaseLayout = ({ children }) => (
-  <div className="theme-wrapper">
-    <div className="me-2">
+  <div>
+    <div style={{ position: 'fixed', top: '0.75rem', right: '1rem', zIndex: 200 }}>
       <ThemeToggle />
     </div>
-    <div className="container">
+    <Container size="lg" pt="xl">
       {children}
-    </div>
+    </Container>
   </div>
 );
 
 const MainLayout = ({ children }) => (
-  <div className="theme-wrapper">
-    <div className="container">
-      <Navbar />
-      <div className="content-wrapper">
-        {children}
-      </div>
-    </div>
+  <div>
+    <Navbar />
+    <Container size="lg" style={{ paddingTop: '5rem' }}>
+      {children}
+    </Container>
   </div>
 );
 

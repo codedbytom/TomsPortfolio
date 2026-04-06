@@ -2,40 +2,23 @@
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  /* padding: 2rem; */
-  background-color: #ffffff;
+  background-color: var(--mantine-color-body);
+  color: var(--mantine-color-text);
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.survey-header {
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.survey-header h1 {
-  font-size: 2.5rem;
-  color: #333;
-  margin: 0;
-  padding: 1rem 0;
-}
-
-.survey-form {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
 .question-block {
-  background-color: #f8f9fa;
+  background-color: var(--mantine-color-default-hover);
+  color: var(--mantine-color-text);
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1rem;
 }
 
 .question-block h2 {
   font-size: 1.2rem;
-  color: #2c3e50;
   margin-bottom: 1rem;
 }
 
@@ -49,9 +32,10 @@
 .rating-button {
   width: 40px;
   height: 40px;
-  border: 2px solid #ddd;
+  border: 2px solid var(--mantine-color-default-border);
   border-radius: 50%;
-  background: white;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -60,19 +44,18 @@
   padding: 0;
   font-size: 1rem;
   line-height: 1;
-  color: #2c3e50;
 }
 
 .rating-button:hover {
-  background-color: #e9ecef;
-  border-color: #646cff;
-  color: #646cff;
+  background-color: var(--mantine-color-default-hover);
+  border-color: var(--mantine-color-blue-filled);
+  color: var(--mantine-color-blue-filled);
 }
 
 .rating-button.selected {
-  background-color: #646cff;
+  background-color: var(--mantine-color-blue-filled);
   color: white;
-  border-color: #646cff;
+  border-color: var(--mantine-color-blue-filled);
 }
 
 .recommendation-buttons {
@@ -84,25 +67,25 @@
 
 .recommendation-button {
   padding: 0.5rem 2rem;
-  border: 2px solid #ddd;
+  border: 2px solid var(--mantine-color-default-border);
   border-radius: 25px;
-  background: white;
+  background: var(--mantine-color-body);
+  color: var(--mantine-color-text);
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 1rem;
-  color: #2c3e50;
 }
 
 .recommendation-button:hover {
-  background-color: #e9ecef;
-  border-color: #646cff;
-  color: #646cff;
+  background-color: var(--mantine-color-default-hover);
+  border-color: var(--mantine-color-blue-filled);
+  color: var(--mantine-color-blue-filled);
 }
 
 .recommendation-button.selected {
-  background-color: #646cff;
+  background-color: var(--mantine-color-blue-filled);
   color: white;
-  border-color: #646cff;
+  border-color: var(--mantine-color-blue-filled);
 }
 
 .checkbox-group {
@@ -120,34 +103,34 @@
   padding: 0.5rem;
   border-radius: 4px;
   transition: background-color 0.2s ease;
-  color: #2c3e50;
+  color: var(--mantine-color-text);
 }
 
 .checkbox-label:hover {
-  background-color: #e9ecef;
+  background-color: var(--mantine-color-default-hover);
 }
 
 textarea {
   width: 100%;
   min-height: 80px;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--mantine-color-default-border);
   border-radius: 8px;
   resize: vertical;
   font-family: inherit;
   margin-top: 0.5rem;
-  background-color: white;
-  color: #2c3e50;
+  background-color: var(--mantine-color-body);
+  color: var(--mantine-color-text);
 }
 
 textarea::placeholder {
-  color: #94a3b8;
+  color: var(--mantine-color-placeholder);
 }
 
 textarea:focus {
   outline: none;
-  border-color: #646cff;
-  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.1);
+  border-color: var(--mantine-color-blue-filled);
+  box-shadow: 0 0 0 2px rgba(var(--mantine-color-blue-filled-hover), 0.1);
 }
 
 textarea.large-textarea {
@@ -157,7 +140,7 @@ textarea.large-textarea {
 .submit-button {
   margin-top: 1rem;
   padding: 1rem 2rem;
-  background-color: #646cff;
+  background-color: var(--mantine-color-blue-filled);
   color: white;
   border: none;
   border-radius: 8px;
@@ -168,12 +151,40 @@ textarea.large-textarea {
 }
 
 .submit-button:hover {
-  background-color: #535bf2;
+  background-color: var(--mantine-color-blue-filled-hover);
   transform: translateY(-2px);
 }
 
 .submit-button:active {
   transform: translateY(0);
+}
+
+.send-btn {
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 1em 2em;
+  font-size: 1.2em;
+  transition: background 0.2s, opacity 0.2s;
+  cursor: pointer;
+  background: #bbdefb;
+  opacity: 0.6;
+  animation: pulse 1.5s infinite;
+}
+
+.send-btn.active {
+  background: #007AFF;
+  opacity: 1;
+}
+
+.send-btn:disabled {
+  cursor: not-allowed;
+}
+
+@keyframes pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
 @media (max-width: 768px) {
@@ -194,46 +205,13 @@ textarea.large-textarea {
     flex-direction: column;
   }
 
-  .container{
-    padding: 0 !important;
-  }
   .recommendation-button {
     width: 100%;
   }
-    /* This targets the root only when .kill-sms-page is a child */
-    #root.no-padding {
-      padding: 0 !important;
-    }
-} 
 
-.send-btn {
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 1em 2em;
-  font-size: 1.2em;
-  transition: background 0.2s, opacity 0.2s;
-  cursor: pointer;
-  background: #bbdefb; /* default: light blue */
-  opacity: 0.6;
-}
-
-.send-btn.active {
-  background: #007AFF; /* bright blue */
-  opacity: 1;
-}
-
-.send-btn:disabled {
-  cursor: not-allowed;
-}
-/* pulse animation for the send button on the preview page*/
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
-.send-btn {
-  animation: pulse 1.5s infinite;
+  #root.no-padding {
+    padding: 0 !important;
+  }
 }
 
 @media screen and (max-width: 480px) {

@@ -12,17 +12,17 @@ export default function Home() {
             <section className="about">
                 <h2>About</h2>
                 <p>
-                    I'm a Full-Stack Developer with 7+ years of experience transforming unstable, outdated systems into fast, reliable platforms.
+                    I'm a Full-Stack Developer with 10+ years of experience transforming unstable, outdated systems into fast, reliable platforms.
                 </p>
 
                 <p>I specialize in:</p>
                 <div className="list-container">
                     <ul className="checkBulletList">
                         <li>API Integrations (Nextiva, Zoom, SMS platforms)</li>
-                        <li>Legacy System Modernization (.NET 4, AngularJS 1.0 → Stabilized and expanded)</li>
+                        <li>Real-Time Application Development (Text-messaging opt-ins, live survey feedback)</li>
                         <li>Database Optimization (Reduced multi-day SQL waits to under 3 hours)</li>
                         <li>Infrastructure & Server Setup (Built full QA environment from scratch)</li>
-                        <li>Real-Time Application Development (Text-messaging opt-ins, live survey feedback)</li>
+                        <li>Legacy System Modernization (.NET 4, AngularJS 1.0 → Stabilized and expanded)</li>
                     </ul>
                 </div>
                 <p>

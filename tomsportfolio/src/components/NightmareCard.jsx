@@ -1,58 +1,42 @@
-import { useState, useRef, useEffect } from 'react';
-import '../styles/NightmareCard.css'; // Make sure to import the CSS
+import { useState } from 'react';
+import { Card, Text, Button, Collapse, Divider } from '@mantine/core';
 
 function NightmareCard({ title, summary, solution, children }) {
     const [open, setOpen] = useState(false);
-    const [height, setHeight] = useState(0);
-    const contentRef = useRef(null);
-
-    useEffect(() => {
-        if (open && contentRef.current) {
-            setHeight(contentRef.current.scrollHeight);
-        } else {
-            setHeight(0);
-        }
-    }, [open]);
-
-    const handleCardClick = (e) => {
-        // Prevent the click from triggering if the button was clicked
-        if (e.target.tagName !== 'BUTTON') {
-            setOpen(!open);
-        }
-    };
 
     return (
-        <div 
-            className="card mb-3 shadow-sm nightmare-card" 
-            onClick={handleCardClick}
+        <Card
+            shadow="sm"
+            radius="md"
+            withBorder
+            mb="md"
             style={{ cursor: 'pointer' }}
+            onClick={() => setOpen(prev => !prev)}
         >
-            <div className="card-header d-flex justify-content-between align-items-center">
-                <h5 className="mb-0">{title}</h5>
-                <button
-                    className="btn btn-primary mt-3 bluebtn-text"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setOpen(!open);
-                    }}
-                >
-                    {open ? 'Collapse' : 'Expand'}
-                </button>
-            </div>
-            <div className="card-body">
-                <p className="card-text">{summary}</p>
-                <div
-                    className="nightmare-collapse transition"
-                    style={{ maxHeight: `${height}px` }}
-                >
-                    <div ref={contentRef} className="pt-3 border-top">
-                        {children}
-                        <p className="card-text border-top">Solution: {solution}</p>
-                    </div>
-                   
+            <Card.Section withBorder inheritPadding py="xs">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text fw={600} size="md">{title}</Text>
+                    <Button
+                        size="xs"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setOpen(prev => !prev);
+                        }}
+                    >
+                        {open ? 'Collapse' : 'Expand'}
+                    </Button>
                 </div>
-            </div>
-        </div>
+            </Card.Section>
+
+            <Text mt="sm" size="sm" c="dimmed">{summary}</Text>
+
+            <Collapse in={open}>
+                <Divider my="sm" />
+                {children}
+                <Divider my="sm" />
+                <Text size="sm"><strong>Solution:</strong> {solution}</Text>
+            </Collapse>
+        </Card>
     );
 }
 

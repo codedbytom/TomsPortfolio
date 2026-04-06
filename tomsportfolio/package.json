@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "type-check" : "tsc --noEmit",
+    "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "preview": "vite preview",
     "deploy": "gh-pages -d dist",
@@ -14,8 +14,9 @@
     "build:prod": "vite build --mode production"
   },
   "dependencies": {
+    "@mantine/core": "^7.17.8",
+    "@mantine/hooks": "^7.17.8",
     "axios": "^1.6.8",
-    "bootstrap": "^5.3.3",
     "framer-motion": "^12.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -35,6 +36,9 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "gh-pages": "^6.3.0",
     "globals": "^15.15.0",
+    "postcss": "^8.5.8",
+    "postcss-preset-mantine": "^1.18.0",
+    "postcss-simple-vars": "^7.0.1",
     "typescript": "^5.8.3",
     "vite": "^6.2.0",
     "vite-plugin-html": "^3.2.2"

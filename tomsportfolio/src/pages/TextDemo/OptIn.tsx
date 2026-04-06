@@ -1,25 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-import {BaseLayout } from '../../components/Layout';
+import { BaseLayout } from '../../components/Layout';
+import {
+  TextInput,
+  NativeSelect,
+  Button,
+  Card,
+  Text,
+  Checkbox,
+  Group,
+  Stack,
+  Image,
+  Anchor,
+} from '@mantine/core';
 
 const SmsOptIn = () => {
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
-    countryCode: '1', // Default to US
+    countryCode: '1',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConsenting, setIsConsenting] = useState(false);
-  const navigate = useNavigate(); // Import useNavigate
-  const handleInputChange = (e : React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const navigate = useNavigate();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
-  //Adding this to check if the server is reachable and to warm up the server from cold start
+
   useEffect(() => {
     const pingServer = async () => {
       try {
@@ -32,36 +42,28 @@ const SmsOptIn = () => {
     pingServer();
   }, []);
 
-  const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Validate phone number length
     if (formData.phoneNumber.length < 9) {
       alert('Phone number must be at least 9 digits long');
       return;
     }
     setIsSubmitting(true);
-    
-
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL_HTTP}/api/OptIn/AddContact`, {
+      await axios.post(`${import.meta.env.VITE_API_URL_HTTP}/api/OptIn/AddContact`, {
         phoneNumber: `${formData.countryCode}${formData.phoneNumber}`,
         name: formData.name,
-      }); 
-      
-      
-      // Simulate successful submission
-      navigate('/text-demo/sms-preview', { 
-        state: { 
+      });
+      navigate('/text-demo/sms-preview', {
+        state: {
           phoneNumber: `${formData.countryCode}${formData.phoneNumber}`,
           contactName: formData.name,
-          justOptedIn: true // Add this flag to show success message
-        }
+          justOptedIn: true,
+        },
       });
-      
-    } catch (error : any) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data || error.message || 'An error occurred';
-        alert(errorMessage);
+        alert(error.response?.data || error.message || 'An error occurred');
       } else {
         alert('An unexpected error occurred');
       }
@@ -72,92 +74,78 @@ const SmsOptIn = () => {
 
   return (
     <BaseLayout>
-      <img src={`/media/TBI_Logo.png`} alt="Logo" className="h-8 mr-2 SmsOptInLogo" />
-      <div id="optInBody" className="container mt-4">
-        <h3 className="text-center mb-4">Text Message Demo</h3>
-        <div className="card mb-4">
-          <div className="card-header text-center">
+      <Image src="/media/TBI_Logo.png" alt="Logo" h={64} w="auto" fit="contain" mx="auto" mb="md" className="SmsOptInLogo" />
+
+      <Stack maw={600} mx="auto" mt="xl">
+        <Text size="xl" fw={600} ta="center">Text Message Demo</Text>
+
+        <Card withBorder radius="md" ta="center" py="sm">
+          <Text size="sm" c="dimmed">
             Please provide your phone number below if you would like to subscribe for Text Message Surveys
-          </div>
-        </div>
-        <form id="contactupdate" onSubmit={handleSubmit}>
-          <div className="mb-3 row">
-            <label className="col-sm-3 col-form-label">Name:</label>
-            <div className="col-sm-9">
-              <input
-                type="text"
-                id="Name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                title="Please use only letters, hyphens, and apostrophes"
-                required
-                className="form-control survey-text-area"
-              />
-            </div>
-          </div>
-          <div className="mb-3 row">
-            <label className="col-sm-3 col-form-label" htmlFor="PhoneNumber">Phone Number:</label>
-            <div className="col-sm-9">
-              <div className="input-group">
-                <select
-                  className="form-select country-code-select"
-                  id="countryCode"
+          </Text>
+        </Card>
+
+        <form onSubmit={handleSubmit}>
+          <Stack gap="md">
+            <TextInput
+              label="Name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              required
+            />
+
+            <div>
+              <Text size="sm" fw={500} mb={4}>Phone Number</Text>
+              <Group gap={0} align="flex-start">
+                <NativeSelect
                   name="countryCode"
                   value={formData.countryCode}
                   onChange={handleInputChange}
-                >
-                  <option value="1">+1 (US)</option>
-                  <option value="44">+44 (UK)</option>
-                  <option value="52">+52 (MX)</option>
-                </select>
-                <input
-                  type="text"
-                  className="form-control survey-text-area"
-                  id="PhoneNumber"
+                  data={[
+                    { value: '1', label: '+1 (US)' },
+                    { value: '44', label: '+44 (UK)' },
+                    { value: '52', label: '+52 (MX)' },
+                  ]}
+                  style={{ width: '7.5rem', borderRadius: '0.25rem 0 0 0.25rem' }}
+                />
+                <TextInput
                   name="phoneNumber"
                   inputMode="numeric"
                   value={formData.phoneNumber}
                   onChange={handleInputChange}
                   required
+                  style={{ flex: 1 }}
+                  styles={{ input: { borderRadius: '0 0.25rem 0.25rem 0' } }}
                 />
-              </div>
+              </Group>
             </div>
-          </div>
-          <div className="mb-3">
-          <div className="custom-checkbox-wrapper">
-            <input 
-              type="checkbox" 
-              id="optIn" 
-              name="optIn" 
-              onChange={() => setIsConsenting(!isConsenting)}
+
+            <Checkbox
+              label="I agree to receive text message surveys and alerts from Tom Built It."
+              checked={isConsenting}
+              onChange={(e) => setIsConsenting(e.currentTarget.checked)}
             />
-            <label htmlFor="optIn" className="custom-checkbox-label">
-              <span className="checkbox-custom"></span>
-              <span className="checkbox-text">
-                I agree to receive text message surveys and alerts from Tom Built It.
-              </span>
-            </label>
-          </div>
-        </div>
-          <div className="form-group text-center">
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isSubmitting || !isConsenting}
-            >
-              {isSubmitting ? 'Submitting...' : 'Submit'}
-            </button>
-          </div>
+
+            <Group justify="center">
+              <Button type="submit" loading={isSubmitting} disabled={!isConsenting}>
+                Submit
+              </Button>
+            </Group>
+          </Stack>
         </form>
-        <div className="card text-center mt-4">
-          <div className="card-footer text-muted">
-          Tom Built It text message surveys. Message and data rates may apply. Message frequency varies. Text HELP for help. Text STOP to opt-out.  View our <Link to="/legal/terms-and-conditions" className="text-primary">Terms & Conditions</Link> and <Link to="/legal/privacy-policy" className="text-primary">Privacy Policy</Link>.
-          </div>
-        </div>
-      </div>
+
+        <Card withBorder radius="md" ta="center" py="sm">
+          <Text size="xs" c="dimmed">
+            Tom Built It text message surveys. Message and data rates may apply. Message frequency varies. Text HELP for help. Text STOP to opt-out.{' '}
+            <Anchor component={Link} to="/legal/terms-and-conditions" size="xs">Terms & Conditions</Anchor>
+            {' '}and{' '}
+            <Anchor component={Link} to="/legal/privacy-policy" size="xs">Privacy Policy</Anchor>.
+          </Text>
+        </Card>
+      </Stack>
     </BaseLayout>
   );
 };
 
-export default SmsOptIn; 
+export default SmsOptIn;
