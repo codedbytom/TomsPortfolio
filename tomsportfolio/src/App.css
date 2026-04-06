@@ -84,4 +84,12 @@ section {
     padding: 1rem;
     margin: 1rem 0;
   }
+  .codingCard{
+    flex-shrink: 0;
+  }
+  .codingTitle{
+    min-width: 0;
+    padding-right: .2em;
+    flex: 1;
+  }
 }

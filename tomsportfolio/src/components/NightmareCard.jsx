@@ -14,10 +14,11 @@ function NightmareCard({ title, summary, solution, children }) {
             onClick={() => setOpen(prev => !prev)}
         >
             <Card.Section withBorder inheritPadding py="xs">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Text fw={600} size="md">{title}</Text>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                    <Text className="codingTitle" fw={600} size="md">{title}</Text>
                     <Button
                         size="xs"
+                        className="codingCard"
                         onClick={(e) => {
                             e.stopPropagation();
                             setOpen(prev => !prev);
