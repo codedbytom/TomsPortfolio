@@ -128,6 +128,9 @@ const SmsOptIn = () => {
             />
 
             <Group justify="center">
+              <Button variant="subtle" component={Link} to="/">
+                Go Back Home
+              </Button>
               <Button type="submit" loading={isSubmitting} disabled={!isConsenting}>
                 Submit
               </Button>

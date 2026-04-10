@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { Button } from '@mantine/core';
 import {MainLayout} from '../components/Layout';
 
 export default function Home() {
@@ -26,13 +28,12 @@ export default function Home() {
                     </ul>
                 </div>
                 <p>
-                    Whether it's cutting a 10-minute report down to under a second, saving clients from churn with real-time demos, or stabilizing production systems that used to require server restarts every two weeks — I deliver real, measurable impact across the stack.
+                    Whether it's cutting a 10 minute report down to under a second, saving clients from churn with real-time demos, or stabilizing production systems that used to require server restarts every two weeks — I deliver real, measurable impact across the stack.
                 </p>
             </section>
 
             <section className="projects">
                 <h2>Highlight Projects</h2>
-                
                 <article className="project">
                     <h3>Full Phone System Migrations</h3>
                     <p>Integrated Nextiva and Zoom APIs across 3 web applications, enabling live call listening and click-to-dial functionality.</p>
@@ -41,6 +42,11 @@ export default function Home() {
                 <article className="project">
                     <h3>Real Time SMS Feedback System</h3>
                     <p>Designed and built an SMS opt-in and survey demo in under 48 hours, directly saving major client accounts.</p>
+                    <p>See it in action — then try it yourself:</p>
+                    <video src="/media/TextMVP.mp4" controls style={{ width: '100%', borderRadius: '8px', margin: '0.75rem 0' }} />
+                    <Button component={Link} to="/text-demo/opt-in" size="md" fw={700} mt="xs">
+                        TRY ME!
+                    </Button>
                 </article>
 
                 <article className="project">
